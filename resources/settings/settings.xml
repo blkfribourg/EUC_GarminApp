@@ -1,0 +1,41 @@
+<settings>
+
+    <setting
+        propertyKey="@Properties.OrangeColoringThreshold"
+        title="@Strings.CIQ_OrangeColoringThreshold">
+        <settingConfig
+            type="numeric"
+            min="0"
+            max="100"
+            errorMessage="@Strings.CIQ_ColoringThreshold_ErrorMessage" />
+    </setting>
+    <setting
+        propertyKey="@Properties.RedColoringThreshold"
+        title="@Strings.CIQ_RedColoringThreshold">
+        <settingConfig
+            type="numeric"
+            min="0"
+            max="100"
+            errorMessage="@Strings.CIQ_ColoringThreshold_ErrorMessage" />
+    </setting>
+
+    <setting
+        propertyKey="@Properties.BottomSubtitleData"
+        title="@Strings.CIQ_BottomSubtitleData">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.CIQ_BottomSubtitleData_WheelModel</listEntry>
+            <listEntry value="1">@Strings.CIQ_BottomSubtitleData_PWM</listEntry>
+            <listEntry value="2">@Strings.CIQ_BottomSubtitleData_Speed</listEntry>
+            <listEntry value="4">@Strings.CIQ_BottomSubtitleData_RideTime</listEntry>
+            <listEntry value="3">@Strings.CIQ_BottomSubtitleData_Distance</listEntry>
+        </settingConfig>
+    </setting>
+
+
+    <setting propertyKey="@Properties.StartButtonAction" title="@Strings.CIQ_StartButtonAction">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.CIQ_StartButtonAction_HornTrigger</listEntry>
+            <listEntry value="1">@Strings.CIQ_StartButtonAction_FrontLightToggle</listEntry>
+        </settingConfig>
+    </setting>
+</settings>

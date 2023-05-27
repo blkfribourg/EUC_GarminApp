@@ -1,0 +1,24 @@
+<layout id="MainLayout">
+
+<label id="speed_lbl" x="140" y="40" text="@Strings.speed_lbl" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="voltage_lbl" x="140" y="80" text="@Strings.voltage_lbl" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="distance_lbl" x="140" y="120" text="@Strings.distance_lbl" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="current_lbl" x="140" y="160" text="@Strings.current_lbl" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="temperature_lbl" x="140" y="200" text="@Strings.temperature_lbl" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="totalDistance_lbl" x="140" y="240" text="@Strings.totalDistance_lbl" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="pedalMode_lbl" x="140" y="280" text="@Strings.pedalMode_lbl" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="speedAlert_lbl" x="140" y="320" text="@Strings.speedAlert_lbl" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="ledMode_lbl" x="140" y="360" text="@Strings.ledMode_lbl" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+
+
+<label id="speed_val" x="250" y="40" text="-1" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="voltage_val" x="250" y="80" text="-1" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="distance_val" x="250" y="120" text="-1" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="current_val" x="250" y="160" text="-1" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="temperature_val" x="250" y="200" text="-1" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="totalDistance_val" x="250" y="240" text="-1" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="pedalMode_val" x="250" y="280" text="-1" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="speedAlert_val" x="250" y="320" text="-1" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+<label id="ledMode_val" x="250" y="360" text="-1" font="Graphics.FONT_SYSTEM_TINY" color="Graphics.COLOR_WHITE" justification="Graphics.TEXT_JUSTIFY_CENTER" />
+
+</layout>
