@@ -1,0 +1,60 @@
+<resources>
+ <fitContributions>
+        <fitField id="0" displayInChart="true" sortOrder = "0" precision="2"
+        chartTitle="@Strings.speed_graph_label" dataLabel="@Strings.speed_label"
+        unitLabel="@Strings.speed_units" fillColor="#FF0000" />
+
+        <fitField id="1" displayInChart="true" sortOrder = "1" precision="2"
+        chartTitle="@Strings.pwm_graph_label" dataLabel="@Strings.pwm_label"
+        unitLabel="@Strings.pwm_units" fillColor="#FF0000" />
+
+
+        <fitField id="2" displayInChart="true" sortOrder = "2" precision="2"
+        chartTitle="@Strings.voltage_graph_label" dataLabel="@Strings.voltage_label"
+        unitLabel="@Strings.voltage_units" fillColor="#FF0000" />
+
+        <fitField id="3" displayInChart="true" sortOrder = "3" precision="2"
+        chartTitle="@Strings.current_graph_label" dataLabel="@Strings.current_label"
+        unitLabel="@Strings.current_units" fillColor="#FF0000" />
+
+        <fitField id="4" displayInChart="true" sortOrder = "4" precision="2"
+        chartTitle="@Strings.temperature_graph_label" dataLabel="@Strings.temperature_label"
+        unitLabel="@Strings.temperature_units" fillColor="#FF0000" />
+
+        <fitField id="5" displayInChart="false" displayInActivitySummary="true" sortOrder = "5" precision="2"
+        dataLabel="@Strings.tripDistance_label"
+        unitLabel="@Strings.tripDistance_units"/>
+
+        <fitField id="6" displayInChart="false" displayInActivitySummary="true" sortOrder = "6" precision="2"
+        dataLabel="@Strings.maxSpeed_label"
+        unitLabel="@Strings.maxSpeed_units"/>
+
+          <fitField id="7" displayInChart="false" displayInActivitySummary="true" sortOrder = "7" precision="2"
+        dataLabel="@Strings.maxPWM_label"
+        unitLabel="@Strings.maxPWM_units"/>
+
+          <fitField id="8" displayInChart="false" displayInActivitySummary="true" sortOrder = "8" precision="2"
+        dataLabel="@Strings.maxCurrent_label"
+        unitLabel="@Strings.maxCurrent_units"/>
+        
+         <fitField id="9" displayInChart="false" displayInActivitySummary="true" sortOrder = "9" precision="2"
+        dataLabel="@Strings.maxTemperature_label"
+        unitLabel="@Strings.maxTemperature_units"/>
+
+         <fitField id="10" displayInChart="false" displayInActivitySummary="true" sortOrder = "10" precision="2"
+        dataLabel="@Strings.avgSpeed_label"
+        unitLabel="@Strings.avgSpeed_units"/>
+
+
+
+
+
+
+
+
+
+    </fitContributions>
+
+</resources>
+
+

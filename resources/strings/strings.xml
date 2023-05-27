@@ -1,0 +1,97 @@
+<strings>
+    <string id="AppName">GarminEUC</string>
+    
+    <string id="MainMenuTitle">Settings</string>
+    <string id="lightsModeMenu">Lights</string>
+    <string id="pedalModeMenu">Pedals mode</string>
+    <string id="alarmModeMenu">Speed alarms</string>
+    <string id="ledModeMenu">Leds mode</string>
+    <string id="cutoffAngleMenu">Cutoff Angle</string>
+    <string id="volumeMenu">Beep volume</string>
+    
+
+
+    <string id="prompt">Speed</string>
+    <string id="speed_lbl">Speed:</string>
+    <string id="voltage_lbl">Volt:</string>
+    <string id="distance_lbl">Dist:</string>
+    <string id="current_lbl">Curr:</string>
+    <string id="temperature_lbl">Temp:</string>
+    <string id="totalDistance_lbl">TDist:</string>
+    <string id="pedalMode_lbl">PedalMode:</string>
+    <string id="speedAlert_lbl">AlertMode:</string>
+    <string id="ledMode_lbl">LedMode:</string>
+
+    <string id="menu_label_1">Item 1</string>
+    <string id="menu_label_2">Item 2</string>
+     <string id="DetailView_AverageSpeed">Average Speed</string>
+    <string id="DetailView_TopSpeed">Top Speed</string>
+    <string id="DetailView_Voltage">Voltage</string>
+    <string id="DetailView_BatteryPercentage">Battery Percentage</string>
+    <string id="DetailView_RideTime">Ride Time</string>
+    <string id="DetailView_Distance">Distance</string>
+
+    <string id="DetailView_SpeedData">$1$ km/h</string>
+    <string id="DetailView_BatteryVoltageData">$1$ V</string>
+    <string id="DetailView_BatteryPercentageData">$1$ %</string>
+    <string id="DetailView_RideDistanceData">$1$ m</string>
+
+    <string id="Message_WheelDisconnected">Wheel discon.</string>
+
+    <!-- Strings, that are used in Connect IQ Settings menu, like 
+        one you see in Garmin Express or Garmin Connect Mobile -->
+    
+    <string id="CIQ_DataUpdateSpeed">Data update speed</string>
+    <string id="CIQ_DataUpdateSpeed_SuperSlow">Super slow</string>
+
+    <string id="CIQ_OrangeColoringThreshold">Orange PWM coloring threshold</string>
+    <string id="CIQ_ColoringThreshold_ErrorMessage">You can't set PWM threshold larger than PWM range itself!</string>
+    <string id="CIQ_RedColoringThreshold">PWM percentage threshold of coloring main arc in red</string>
+
+    <string id="CIQ_BottomSubtitleData">Bottom subtitle</string>
+    <string id="CIQ_BottomSubtitleData_WheelModel">Wheel model</string>
+    <string id="CIQ_BottomSubtitleData_PWM">PWM / Max PWM</string>
+    <string id="CIQ_BottomSubtitleData_Speed">Average Speed / Max Speed</string>
+    <string id="CIQ_BottomSubtitleData_RideTime">Ride time</string>
+    <string id="CIQ_BottomSubtitleData_Distance">Distance</string>
+    
+    <string id="CIQ_StartButtonAction">Action on START button press / screen tap</string>
+    <string id="CIQ_StartButtonAction_HornTrigger">Horn trigger</string>
+    <string id="CIQ_StartButtonAction_FrontLightToggle">Front light toggle</string>
+
+
+
+
+    <!-- FIT Strings-->
+
+    <string id="speed_graph_label">Speed</string>
+    <string id="speed_label">Speed</string>
+    <string id="speed_units">km/h</string>
+    <string id="pwm_graph_label">PWM</string>
+    <string id="pwm_label">PWM</string>
+    <string id="pwm_units"></string>
+    <string id="voltage_graph_label">Voltage</string>
+    <string id="voltage_label">Voltage</string>
+    <string id="voltage_units">V</string>
+    <string id="current_graph_label">Current</string>
+    <string id="current_label">Current</string>
+    <string id="current_units">A</string>
+    <string id="temperature_graph_label">MB Temperature</string>
+    <string id="temperature_label">MB Temperature</string>
+    <string id="temperature_units">°C</string>
+    <string id="tripDistance_label">Trip distance</string>
+    <string id="tripDistance_units">km</string>
+    <string id="maxSpeed_label">Session max speed</string>
+    <string id="maxSpeed_units">km/h</string>
+    <string id="maxPWM_label">Session max PWM</string>
+    <string id="maxPWM_units">%</string>
+    <string id="maxCurrent_label">Session max ph current</string>
+    <string id="maxCurrent_units">A</string>
+    <string id="maxTemperature_label">Session max temperature</string>
+    <string id="maxTemperature_units">°C</string>
+    <string id="avgSpeed_label">Session average speed</string>
+    <string id="avgSpeed_units">km/h</string>
+
+
+
+</strings>
