@@ -6,8 +6,7 @@ using Toybox.System;
 class GarminEUCView extends WatchUi.View {
     private var cDrawables = {};
     private var timer;
-  
-
+    private var current_PWM; // not sure the cost of calling the compute function is that High but as using pmw value several times, storing it
     function initialize() {
         View.initialize();
 
@@ -48,7 +47,9 @@ function onLayout(dc as Dc) as Void {
 
     // Update the view
     function onUpdate(dc) {
-    	
+    	current_PWM=eucData.getCalculatedtPWM().toFloat();
+
+
         // Update label drawables
         cDrawables[:TimeDate].setText( // Update time
             System.getClockTime().hour.format("%d") +
@@ -71,7 +72,7 @@ function onLayout(dc as Dc) as Void {
         cDrawables[:SpeedNumber].setText(valueRound(eucData.speed,"%.1f").toString());
         
         //cDrawables[:SpeedArc].setValues(WheelData.currentSpeed.toFloat(), WheelData.speedLimit);
-        cDrawables[:SpeedArc].setValues(eucData.getCalculatedtPWM().toFloat(), 100);
+        cDrawables[:SpeedArc].setValues(current_PWM, 100);
         cDrawables[:BatteryArc].setValues(batteryPercentage, 100);
         cDrawables[:TemperatureArc].setValues(eucData.temperature, eucData.maxTemperature);
 
@@ -157,6 +158,7 @@ function onLayout(dc as Dc) as Void {
     function onTimerUpdate(){
 		//System.println("onUpdate");
 		//eucData.speed=eucData.speed+1;
+        EUCAlarms.speedAlarmCheck(current_PWM); // fonction that trigger the alarm if pwm is too high 
         WatchUi.requestUpdate();
 
 	}
