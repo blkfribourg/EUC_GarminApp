@@ -1,6 +1,12 @@
 using Toybox.System;
 
 module eucData {
+  // Calculated PWM variables :
+  // PLEASE UPDATE WITH YOU OWN VALUES BEFORE USE !
+  var rotationSpeed = 65.2; // cutoff speed when freespin test performed
+  var powerFactor = 0.9; // 0.9 for better safety
+  var rotationVoltage = 81.5; // voltage when freespin test performed
+
   var deviceName = null;
   var voltage_scaling = 1.25;
   var speed = 0;
@@ -106,9 +112,6 @@ module eucData {
 
   function getCalculatedtPWM() {
     if (eucData.voltage != 0) {
-      var rotationSpeed = 65.2;
-      var powerFactor = 1; // 0.9 for better safety
-      var rotationVoltage = 81.5;
       var CalculatedPWM =
         eucData.speed.toFloat() /
         ((rotationSpeed / rotationVoltage) *
