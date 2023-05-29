@@ -4,160 +4,175 @@ using Toybox.WatchUi as Ui;
 import Toybox.Lang;
 
 class eucBLEDelegate extends Ble.BleDelegate {
-	var profileManager=null;
-	var device=null;
-    var strA="";
-    var strB="";
-    var settings=0x0000;
-    var service = null;
-    var char = null;
-    var queue;
-    
-    function initialize(pm,q) {
-        
-        Sys.println("initializeBle");
-        BleDelegate.initialize();
-        profileManager=pm;
-        char=profileManager.EUC_CHAR;
-        queue=q;    
-        Ble.setScanState(Ble.SCAN_STATE_SCANNING);
-       
-    }
-    
-    function onConnectedStateChanged( device, state ) {
-//		view.deviceStatus=state;
-		if(state==Ble.CONNECTION_STATE_CONNECTED) {
-	        service = device.getService(profileManager.EUC_SERVICE );
-	        char = (service!=null) ? service.getCharacteristic(profileManager.EUC_CHAR) : null;
-			if(service!=null && char!=null) {	               
-				var cccd = char.getDescriptor(Ble.cccdUuid());
-				cccd.requestWrite([0x01,0x00]b);
-			} else {
-				Ble.unpairDevice(device);
-			}	        
+  var profileManager = null;
+  var device = null;
+  var strA = "";
+  var strB = "";
+  var settings = 0x0000;
+  var service = null;
+  var char = null;
+  var queue;
 
-		} else {
-			Ble.unpairDevice(device);
-			Ble.setScanState(Ble.SCAN_STATE_SCANNING);
-		}	       
-    }  
-    //! @param scanResults An iterator of new scan results
-    function onScanResults( scanResults as Ble.Iterator) {  
-             	
-        for( var result = scanResults.next(); result != null; result = scanResults.next() ) {
-            if (result instanceof Ble.ScanResult) {
-              if( contains( result.getServiceUuids(), profileManager.EUC_SERVICE, result) ) {  
-                
-                    Ble.setScanState(Ble.SCAN_STATE_OFF);
-                    device = Ble.pairDevice(result);		
-                }    	
-                                       
-              
-				
-                	
-        }   }     
-    }   
-    
-    function onDescriptorWrite(desc, status) {
-    }
+  function initialize(pm, q) {
+    //Sys.println("initializeBle");
+    BleDelegate.initialize();
+    profileManager = pm;
+    char = profileManager.EUC_CHAR;
+    queue = q;
+    Ble.setScanState(Ble.SCAN_STATE_SCANNING);
+  }
 
-    function onCharacteristicWrite(desc, status) {
-       
-        
-    
+  function onConnectedStateChanged(device, state) {
+    //		view.deviceStatus=state;
+    if (state == Ble.CONNECTION_STATE_CONNECTED) {
+      service = device.getService(profileManager.EUC_SERVICE);
+      char =
+        service != null
+          ? service.getCharacteristic(profileManager.EUC_CHAR)
+          : null;
+      if (service != null && char != null) {
+        var cccd = char.getDescriptor(Ble.cccdUuid());
+        cccd.requestWrite([0x01, 0x00]b);
+      } else {
+        Ble.unpairDevice(device);
+      }
+    } else {
+      Ble.unpairDevice(device);
+      Ble.setScanState(Ble.SCAN_STATE_SCANNING);
     }
-   
-    function onCharacteristicChanged(char, value) {
-        
-        var head= new[20]b;
-        
-        
-        if(value.size()==20){
-            head=value;
-
-            if((head[11].toNumber()==0)&&(head[12].toNumber()==28)){
-                //Frame B 
-                strB=head[11].toString()+","+head[12].toString()+","+head[13].toString();
-                eucData.totalDistance=value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, { :offset => 6 ,:endianness => Lang.ENDIAN_BIG})/1000; // in km
-                settings=value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 10 ,:endianness => Lang.ENDIAN_BIG});
-                
-                //Sys.println("byte 10 :"+settings);
-                
-                eucData.pedalMode=(settings>>13)&0x03;
-                eucData.speedAlertMode =(settings>>10)&0x03;
-                eucData.rollAngleMode  = (settings>>7)&0x03;
-                //System.println("read angle mode: "+(settings>>7)&0x03);
-                //eucData.speedUnitMode  = value[10]&0x1;
-                eucData.ledMode=value[17].toNumber(); // 12 in euc dashboard by freestyl3r
-                //eucData.lightMode=value[19]&0x03; unable to get light mode from wheel
-                //System.println("light mode (frameA ):"+eucData.lightMode);
-                
-            }else{
-                //Frame A
-                strA=head[4].toString()+","+head[5].toString()+","+head[6].toString();
-                eucData.speed=value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 4 ,:endianness => Lang.ENDIAN_BIG}).abs()*3.6/100;
-                eucData.voltage=value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 2 ,:endianness => Lang.ENDIAN_BIG}).abs()/100;
-                eucData.tripDistance=value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, { :offset => 6 ,:endianness => Lang.ENDIAN_BIG})/1000; //in km
-                eucData.current=value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 10 ,:endianness => Lang.ENDIAN_BIG}).abs()/100;
-                eucData.temperature=((value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 12 ,:endianness => Lang.ENDIAN_BIG})/340)+36.53);
-                //eucData.volume=(value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 16 ,:endianness => Lang.ENDIAN_BIG}));
-                //eucData.PWM=value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 14 ,:endianness => Lang.ENDIAN_BIG})*10;
-                System.println("PWM data "+ eucData.PWM);
+  }
+  //! @param scanResults An iterator of new scan results
+  function onScanResults(scanResults as Ble.Iterator) {
+    for (
+      var result = scanResults.next();
+      result != null;
+      result = scanResults.next()
+    ) {
+      if (result instanceof Ble.ScanResult) {
+        if (
+          contains(result.getServiceUuids(), profileManager.EUC_SERVICE, result)
+        ) {
+          Ble.setScanState(Ble.SCAN_STATE_OFF);
+          device = Ble.pairDevice(result);
         }
-       
-      
+      }
+    }
+  }
 
-           
-//eucData.frameType=strA;
+  function onDescriptorWrite(desc, status) {}
 
-//eucData.frameType2=strB;
-            
-            
-        
-    } 	   
+  function onCharacteristicWrite(desc, status) {}
+
+  function onCharacteristicChanged(char, value) {
+    var head = new [20]b;
+    // I should be buffering the frames tranmitted by the wheels rather than identifying that way because it probably wouldn't work with custom firmwares
+
+    if (value.size() == 20) {
+      head = value;
+
+      if (head[11].toNumber() == 0 && head[12].toNumber() == 28) {
+        //Frame B
+        strB =
+          head[11].toString() +
+          "," +
+          head[12].toString() +
+          "," +
+          head[13].toString();
+        eucData.totalDistance =
+          value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
+            :offset => 6,
+            :endianness => Lang.ENDIAN_BIG,
+          }) / 1000; // in km
+        settings = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+          :offset => 10,
+          :endianness => Lang.ENDIAN_BIG,
+        });
+
+        //Sys.println("byte 10 :"+settings);
+
+        eucData.pedalMode = (settings >> 13) & 0x03;
+        eucData.speedAlertMode = (settings >> 10) & 0x03;
+        eucData.rollAngleMode = (settings >> 7) & 0x03;
+        //System.println("read angle mode: "+(settings>>7)&0x03);
+        //eucData.speedUnitMode  = value[10]&0x1;
+        eucData.ledMode = value[17].toNumber(); // 12 in euc dashboard by freestyl3r
+        //eucData.lightMode=value[19]&0x03; unable to get light mode from wheel
+        //System.println("light mode (frameA ):"+eucData.lightMode);
+      } else {
+        //Frame A
+        strA =
+          head[4].toString() +
+          "," +
+          head[5].toString() +
+          "," +
+          head[6].toString();
+        eucData.speed =
+          (value
+            .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+              :offset => 4,
+              :endianness => Lang.ENDIAN_BIG,
+            })
+            .abs() *
+            3.6) /
+          100;
+        eucData.voltage =
+          value
+            .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+              :offset => 2,
+              :endianness => Lang.ENDIAN_BIG,
+            })
+            .abs() / 100;
+        eucData.tripDistance =
+          value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
+            :offset => 6,
+            :endianness => Lang.ENDIAN_BIG,
+          }) / 1000; //in km
+        eucData.current =
+          value
+            .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+              :offset => 10,
+              :endianness => Lang.ENDIAN_BIG,
+            })
+            .abs() / 100;
+        eucData.temperature =
+          value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+            :offset => 12,
+            :endianness => Lang.ENDIAN_BIG,
+          }) /
+            340 +
+          36.53;
+        //eucData.volume=(value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 16 ,:endianness => Lang.ENDIAN_BIG}));
+        //eucData.PWM=value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 14 ,:endianness => Lang.ENDIAN_BIG})*10;
+        //System.println("PWM data "+ eucData.PWM);
+      }
+    }
+    /*  
      if(value.size()==8){
-            // tail frame A and head of frame B nothing here
-             
-             
+            // tail frame A and head of frame B nothing here         
         }
-       // System.println("valuesize= "+value.size());
-      // System.println("frame= "+value.toString());            
+    */
+  }
 
+  function sendCmd(cmd) {
+    //Sys.println("enter sending command " + cmd);
+
+    if (service != null && char != null) {
+      var enc_cmd = string_to_byte_array(cmd as String);
+      //Sys.println("sending command " +enc_cmd.toString());
+      char.requestWrite(enc_cmd, { :writeType => Ble.WRITE_TYPE_DEFAULT });
+      //  Sys.println("command sent !");
     }
-  function sendCmd(cmd){
-    Sys.println("enter sending command " + cmd);
-           
-			if(service!=null && char!=null) {	      
-  
-                    var enc_cmd=string_to_byte_array(cmd as String);
-                    Sys.println("sending command " +enc_cmd.toString());
-                    char.requestWrite(enc_cmd, {:writeType => Ble.WRITE_TYPE_DEFAULT} );
-                    //  Sys.println("command sent !");
-               }
-                
-               //var enc_cmd=string_to_byte_array(cmd);
-                
-    
-              
-             
-		//	} else {
-            // print connection error
-           
-            
+  }
 
-        }
-   
-
-
-    private function contains( iter, obj,sr ) {
-        for( var uuid = iter.next(); uuid != null; uuid = iter.next() ) {      
-            if( uuid.equals( obj ) ) {
-                return true;
-            }
-        }
-        return false;
+  private function contains(iter, obj, sr) {
+    for (var uuid = iter.next(); uuid != null; uuid = iter.next()) {
+      if (uuid.equals(obj)) {
+        return true;
+      }
     }
-
+    return false;
+  }
+  /*
     hidden function string_to_byte_array(plain_text) {
     var options = {
 		:fromRepresentation => StringUtil.REPRESENTATION_STRING_PLAIN_TEXT,
@@ -170,22 +185,16 @@ class eucBLEDelegate extends Ble.BleDelegate {
     //System.println(Lang.format("           '$1$'..", [ result ]));
     
     return result;
-}	
+}
+*/
 
+  function getChar() {
+    return char;
+  }
 
-    function getChar(){
-        return char;
-    }
-
-    function getPMService(){
-        return profileManager.EUC_SERVICE;
-    }
-
-
-
-
-
-
+  function getPMService() {
+    return profileManager.EUC_SERVICE;
+  }
 }
 
 /*
@@ -241,26 +250,3 @@ class eucBLEDelegate extends Ble.BleDelegate {
         Bytes 20-23: frame footer, 5A 5A 5A 5A
     Unknown bytes may carry out other data, but currently not used by the parser.
 */
-
-
-// alarm 1 / pedal hard / angle  1 : 40 00 : 010 000 000 0000000
-
-// alarm 2 / pedal hard / angle  1 : 44 00 : 010 001 000 0000000
-
-// alarm 3 / pedal hard / angle  1 48 00   : 010 010 000 0000000
-
-// alarm 1 / pedal medium / angle  1 :2000 : 001 000 000 0000000
-
-
-// alarm 1 / pedal soft / angle  1 : 00 00 : 000 000 000 0000000
-
-// alarm 1 / pedal hard / angle  2 : 40 00
-
-// alarm 1 / pedal hard / angle  3 : 40 00
-
-
-// 40 : hard /alarm 1 / low : 01000000
-
-//24 : medium / alarm 2 / medium :00100100
-
-//28 : alarm off / medium /medium : 00101000

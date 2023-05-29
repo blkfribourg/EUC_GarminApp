@@ -5,211 +5,220 @@ import Toybox.WatchUi;
 import Toybox.Timer;
 
 class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
+  var eucBleDelegate = null;
+  var queue = null;
+  var parent_menu = null;
+  var menu as CheckboxMenu?;
+  var delay = 200;
+  var updateDelay = 500;
+  var main_view;
+  var main_delegate;
+  var delayUpdate;
 
-    var eucBleDelegate =null;
-    var queue=null;
-    var parent_menu=null;
-    var menu as CheckboxMenu?;
-    var delay=200;
-    var updateDelay=500;
-    var main_view;
-    var main_delegate;
-    var delayUpdate;
-
-
-    function initialize(current_menu,current_eucBleDelegate,q,m_view,m_delegate) {
-        parent_menu=current_menu;
-        eucBleDelegate=current_eucBleDelegate;
-        queue=q;
-        Menu2InputDelegate.initialize();
-        main_view=m_view;
-        main_delegate=m_delegate;
-        delayUpdate = new Timer.Timer();
-       updateSublabels();
-    }
-  function onBack(){
-  	WatchUi.popView(WatchUi.SLIDE_DOWN );
+  function initialize(
+    current_menu,
+    current_eucBleDelegate,
+    q,
+    m_view,
+    m_delegate
+  ) {
+    parent_menu = current_menu;
+    eucBleDelegate = current_eucBleDelegate;
+    queue = q;
+    Menu2InputDelegate.initialize();
+    main_view = m_view;
+    main_delegate = m_delegate;
+    delayUpdate = new Timer.Timer();
+    updateSublabels();
+  }
+  function onBack() {
+    WatchUi.popView(WatchUi.SLIDE_DOWN);
     delayUpdate.stop();
   }
   function onSelect(item) {
-        //System.println(item.getId().toString());
-             if(item.getId()==:lightsModeMenu){
-                nestedMenu("Lights",eucData.dictLightsMode);
-            }
-            
-            if(item.getId()==:pedalModeMenu){
-                nestedMenu("Pedal Mode",eucData.dictPedalMode);
-            }
-           if(item.getId()==:alarmModeMenu)	{
-                nestedMenu("Speed Alarm",eucData.dictAlarmMode);
-            }
-           if(item.getId()==:cutoffAngleMenu){
-                nestedMenu("Cutoff Angle",eucData.dictCutoffAngleMode);
-            }
-             if(item.getId()==:ledModeMenu)	{
-                nestedMenu("Leds Mode",eucData.dictLedMode);
-            }
-             if(item.getId()==:volumeMenu)	{
-                nestedMenu("Beep Volume",eucData.dictVolume);
-            }
-        }
-        
-
-
-    function nestedMenu(title,paramsdict){
-       // var menu = new WatchUi.Menu2({:title=>title});
-      menu= new WatchUi.CheckboxMenu({:title=>title});
-        var delegate;
-        var menuKeys=paramsdict.keys();
-        var menuVals=paramsdict.values();
-        for (var i=0;i<paramsdict.size();i++){
-            menu.addItem(
-                new CheckboxMenuItem(
-                 menuKeys[i],
-                   "",
-                   menuVals[i],
-                    false,
-                     {}
-                )
-            );
-        }
-        delegate = new GarminEUCsubMenu2Delegate(title,parent_menu,self,eucBleDelegate,queue); // a WatchUi.Menu2InputDelegate
-        WatchUi.pushView(menu, delegate, WatchUi.SLIDE_IMMEDIATE);
-        delayUpdate.stop();
-        return true;
+    //System.println(item.getId().toString());
+    if (item.getId() == :lightsModeMenu) {
+      nestedMenu("Lights", eucData.dictLightsMode);
     }
 
-    function updateSublabels(){
-    	var menuToUpdate=parent_menu;
-       // System.println("call update labels");
-        var valuesToUpdate=[
-            eucData.dictLedMode.keys()[eucData.dictLedMode.values().indexOf(eucData.ledMode.toString())],
-            eucData.dictAlarmStatus.keys()[eucData.dictAlarmStatus.values().indexOf(eucData.speedAlertMode.toString())],
-            eucData.dictPedalStatus.keys()[eucData.dictPedalStatus.values().indexOf(eucData.pedalMode.toString())]
-            ];
-        
-        if (menuToUpdate!=null){
-            for (var i=0;i<valuesToUpdate.size();i++){
-                menuToUpdate.getItem(i+1).setSubLabel(valuesToUpdate[i].toString()); // i+1 -> skipping first item (lights as no feedback on tesla)
-                
-            }
-        
-        }
-
-        
-   }
-       function uniqueCheck(parentMenuTitle,item){
-       System.println(parentMenuTitle);
-        if(parentMenuTitle.equals("Lights")){
-                uncheckExeptItem(item,eucData.dictLightsMode);
-            }
-            
-            if(parentMenuTitle.equals("Pedal Mode")){
-                uncheckExeptItem(item,eucData.dictPedalMode);
-            }
-           if(parentMenuTitle.equals("Speed Alarm"))	{
-           System.println("alarm");
-                uncheckExeptItem(item,eucData.dictAlarmMode);
-            }
-           if(parentMenuTitle.equals("Cutoff Angle")){
-               uncheckExeptItem(item,eucData.dictCutoffAngleMode);
-            }
-             if(parentMenuTitle.equals("Leds Mode"))	{
-               uncheckExeptItem(item,eucData.dictLedMode);
-            }
-             if(parentMenuTitle.equals("Beep Volume"))	{
-               uncheckExeptItem(item,eucData.dictVolume);
-            }
-    	System.println(item.getId());
+    if (item.getId() == :pedalModeMenu) {
+      nestedMenu("Pedal Mode", eucData.dictPedalMode);
     }
-     function uncheckExeptItem(item,paramsdict){
-     	for (var i=0;i<paramsdict.size();i++){
-     		if(item!=menu.getItem(i)){
-     		var tempItem= menu.getItem(i) as CheckboxMenuItem;
-     		tempItem.setChecked(false);
-     		}
-     		
-     		
-     	}
-     	
-   }
-   function execute(parentMenuTitle){
-   		if(parentMenuTitle.equals("Lights")){
-                findChecked(parentMenuTitle,eucData.dictLightsMode);
-            }
-            
-            if(parentMenuTitle.equals("Pedal Mode")){
-                findChecked(parentMenuTitle,eucData.dictPedalMode);
-            }
-           if(parentMenuTitle.equals("Speed Alarm"))	{
-           System.println("alarm");
-                findChecked(parentMenuTitle,eucData.dictAlarmMode);
-            }
-           if(parentMenuTitle.equals("Cutoff Angle")){
-               findChecked(parentMenuTitle,eucData.dictCutoffAngleMode);
-            }
-             if(parentMenuTitle.equals("Leds Mode"))	{
-               findChecked(parentMenuTitle,eucData.dictLedMode);
-            }
-             if(parentMenuTitle.equals("Beep Volume"))	{
-               findChecked(parentMenuTitle,eucData.dictVolume);
-            }
-   
-   }
-   
-   function findChecked(parentMenuTitle,paramsdict){
-     	for (var i=0;i<paramsdict.size();i++){
-     		
-     		var tempItem= menu.getItem(i) as CheckboxMenuItem;
-     		if(tempItem.isChecked()){
-     			sendCommand(parentMenuTitle,tempItem.getId().toString());
-     		}
-     		
-     		
-     	}
-     	
-   }
-   function sendCommand(fromMenu,cmd){
+    if (item.getId() == :alarmModeMenu) {
+      nestedMenu("Speed Alarm", eucData.dictAlarmMode);
+    }
+    if (item.getId() == :cutoffAngleMenu) {
+      nestedMenu("Cutoff Angle", eucData.dictCutoffAngleMode);
+    }
+    if (item.getId() == :ledModeMenu) {
+      nestedMenu("Leds Mode", eucData.dictLedMode);
+    }
+    if (item.getId() == :volumeMenu) {
+      nestedMenu("Beep Volume", eucData.dictVolume);
+    }
+  }
+
+  function nestedMenu(title, paramsdict) {
+    // var menu = new WatchUi.Menu2({:title=>title});
+    menu = new WatchUi.CheckboxMenu({ :title => title });
+    var delegate;
+    var menuKeys = paramsdict.keys();
+    var menuVals = paramsdict.values();
+    for (var i = 0; i < paramsdict.size(); i++) {
+      menu.addItem(
+        new CheckboxMenuItem(menuKeys[i], "", menuVals[i], false, {})
+      );
+    }
+    delegate = new GarminEUCsubMenu2Delegate(
+      title,
+      parent_menu,
+      self,
+      eucBleDelegate,
+      queue
+    ); // a WatchUi.Menu2InputDelegate
+    WatchUi.pushView(menu, delegate, WatchUi.SLIDE_IMMEDIATE);
+    delayUpdate.stop();
+    return true;
+  }
+
+  function updateSublabels() {
+    var menuToUpdate = parent_menu;
+    // System.println("call update labels");
+    var valuesToUpdate = [
+      eucData.dictLedMode.keys()[
+        eucData.dictLedMode.values().indexOf(eucData.ledMode.toString())
+      ],
+      eucData.dictAlarmStatus.keys()[
+        eucData.dictAlarmStatus
+          .values()
+          .indexOf(eucData.speedAlertMode.toString())
+      ],
+      eucData.dictPedalStatus.keys()[
+        eucData.dictPedalStatus.values().indexOf(eucData.pedalMode.toString())
+      ],
+    ];
+
+    if (menuToUpdate != null) {
+      for (var i = 0; i < valuesToUpdate.size(); i++) {
+        menuToUpdate.getItem(i + 1).setSubLabel(valuesToUpdate[i].toString()); // i+1 -> skipping first item (lights as no feedback on tesla)
+      }
+    }
+  }
+  function uniqueCheck(parentMenuTitle, item) {
+    //System.println(parentMenuTitle);
+    if (parentMenuTitle.equals("Lights")) {
+      uncheckExeptItem(item, eucData.dictLightsMode);
+    }
+
+    if (parentMenuTitle.equals("Pedal Mode")) {
+      uncheckExeptItem(item, eucData.dictPedalMode);
+    }
+    if (parentMenuTitle.equals("Speed Alarm")) {
+      uncheckExeptItem(item, eucData.dictAlarmMode);
+    }
+    if (parentMenuTitle.equals("Cutoff Angle")) {
+      uncheckExeptItem(item, eucData.dictCutoffAngleMode);
+    }
+    if (parentMenuTitle.equals("Leds Mode")) {
+      uncheckExeptItem(item, eucData.dictLedMode);
+    }
+    if (parentMenuTitle.equals("Beep Volume")) {
+      uncheckExeptItem(item, eucData.dictVolume);
+    }
+    //System.println(item.getId());
+  }
+  function uncheckExeptItem(item, paramsdict) {
+    for (var i = 0; i < paramsdict.size(); i++) {
+      if (item != menu.getItem(i)) {
+        var tempItem = menu.getItem(i) as CheckboxMenuItem;
+        tempItem.setChecked(false);
+      }
+    }
+  }
+  function execute(parentMenuTitle) {
+    if (parentMenuTitle.equals("Lights")) {
+      findChecked(parentMenuTitle, eucData.dictLightsMode);
+    }
+
+    if (parentMenuTitle.equals("Pedal Mode")) {
+      findChecked(parentMenuTitle, eucData.dictPedalMode);
+    }
+    if (parentMenuTitle.equals("Speed Alarm")) {
+      findChecked(parentMenuTitle, eucData.dictAlarmMode);
+    }
+    if (parentMenuTitle.equals("Cutoff Angle")) {
+      findChecked(parentMenuTitle, eucData.dictCutoffAngleMode);
+    }
+    if (parentMenuTitle.equals("Leds Mode")) {
+      findChecked(parentMenuTitle, eucData.dictLedMode);
+    }
+    if (parentMenuTitle.equals("Beep Volume")) {
+      findChecked(parentMenuTitle, eucData.dictVolume);
+    }
+  }
+
+  function findChecked(parentMenuTitle, paramsdict) {
+    for (var i = 0; i < paramsdict.size(); i++) {
+      var tempItem = menu.getItem(i) as CheckboxMenuItem;
+      if (tempItem.isChecked()) {
+        sendCommand(parentMenuTitle, tempItem.getId().toString());
+      }
+    }
+  }
+  function sendCommand(fromMenu, cmd) {
     var command = null;
-    var enc_cmd=null;
-  
-        if (fromMenu.equals("Leds Mode")){
-            command="W";
-             enc_cmd=string_to_byte_array(command as String);
-             //System.println("enc_cmd= "+enc_cmd);
-            queue.add([eucBleDelegate.getChar(),queue.C_WRITENR,enc_cmd],eucBleDelegate.getPMService());
-            command="M";
-             enc_cmd=string_to_byte_array(command as String);
-            
-            queue.add([eucBleDelegate.getChar(),queue.C_WRITENR,enc_cmd],eucBleDelegate.getPMService());
-            command=cmd;
-             enc_cmd=string_to_byte_array(command as String);
-            queue.add([eucBleDelegate.getChar(),queue.C_WRITENR,enc_cmd],eucBleDelegate.getPMService());
-           
-        
-        }if (fromMenu.equals("Beep Volume")){
-            command="W";
-             enc_cmd=string_to_byte_array(command as String);
-             //System.println("enc_cmd= "+enc_cmd);
-            queue.add([eucBleDelegate.getChar(),queue.C_WRITENR,enc_cmd],eucBleDelegate.getPMService());
-            command="B";
-             enc_cmd=string_to_byte_array(command as String);
-            
-            queue.add([eucBleDelegate.getChar(),queue.C_WRITENR,enc_cmd],eucBleDelegate.getPMService());
-            command=cmd;
-             enc_cmd=string_to_byte_array(command as String);
-            queue.add([eucBleDelegate.getChar(),queue.C_WRITENR,enc_cmd],eucBleDelegate.getPMService());
-           
-            
-        }else{
-            
-             eucBleDelegate.sendCmd(cmd);
-        }
-        queue.delayTimer.start(method(:timerCallback), delay, true);
-       System.println("calling update delay");
-        delayUpdate.start(method(:labelUpdate), updateDelay, true);
-       
-}
+    var enc_cmd = null;
+
+    if (fromMenu.equals("Leds Mode")) {
+      command = "W";
+      enc_cmd = string_to_byte_array(command as String);
+
+      queue.add(
+        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
+        eucBleDelegate.getPMService()
+      );
+      command = "M";
+      enc_cmd = string_to_byte_array(command as String);
+
+      queue.add(
+        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
+        eucBleDelegate.getPMService()
+      );
+      command = cmd;
+      enc_cmd = string_to_byte_array(command as String);
+      queue.add(
+        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
+        eucBleDelegate.getPMService()
+      );
+    }
+    if (fromMenu.equals("Beep Volume")) {
+      command = "W";
+      enc_cmd = string_to_byte_array(command as String);
+
+      queue.add(
+        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
+        eucBleDelegate.getPMService()
+      );
+      command = "B";
+      enc_cmd = string_to_byte_array(command as String);
+
+      queue.add(
+        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
+        eucBleDelegate.getPMService()
+      );
+      command = cmd;
+      enc_cmd = string_to_byte_array(command as String);
+      queue.add(
+        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
+        eucBleDelegate.getPMService()
+      );
+    } else {
+      eucBleDelegate.sendCmd(cmd);
+    }
+    queue.delayTimer.start(method(:timerCallback), delay, true);
+    delayUpdate.start(method(:labelUpdate), updateDelay, true);
+  }
+  /*
 hidden function string_to_byte_array(plain_text) {
     var options = {
 		:fromRepresentation => StringUtil.REPRESENTATION_STRING_PLAIN_TEXT,
@@ -222,19 +231,19 @@ hidden function string_to_byte_array(plain_text) {
     
     return result;
  }
-    
-    function timerCallback(){
-        queue.run();
-    }
+*/
+  function timerCallback() {
+    queue.run();
+  }
 
-    function labelUpdate(){
+  function labelUpdate() {
     updateSublabels();
     WatchUi.requestUpdate();
-    System.println("update completed");
-    }
-   }
+  }
+}
+
 /*
-//! This is the top menu in the Wrap custom menu
+//! Custom menu adapted from garmin sdk samples, I was using an icon to identify currently selected item but not showing on my garmin venu -> switched to checkbox items for menu
 class CustomEucMenu extends WatchUi.CustomMenu {
     var title="";
     //! Constructor
@@ -295,4 +304,3 @@ class CustomItem extends WatchUi.CustomMenuItem {
      
 }
 */
-
