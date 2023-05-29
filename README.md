@@ -1,6 +1,6 @@
 This is a standalone application that currently only works with Begode wheels and is designed to run on a Garmin Venu.
 
-I primarily did this for personal use (it works perfectly on my Tesla V2), please note that it should be considered as a beta as I only tested it on my wheel. I started with the companion WheelLog (developed by ggoraa) for the interface, and I coded the Bluetooth communication part (greatly simplified thanks to the developers of WheelLog, to Freestyl3r and to jim_m_58).
+I primarily did this for personal use (it works perfectly on my Tesla V2), please note that it should be considered as a beta as I only tested it on my wheel. I started with the Garmin WheelLog companion (developed by ggoraa) for the interface, and I coded the Bluetooth communication part (greatly simplified thanks to the developers of WheelLog, to Freestyl3r and to jim_m_58).
 
 No public build is available yet, but you can build it using the version Garmin connect IQ sdk 4.2.4
 
