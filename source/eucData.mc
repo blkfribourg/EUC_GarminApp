@@ -3,11 +3,11 @@ using Toybox.System;
 module eucData {
     var deviceName = null;
     var voltage_scaling=1.25;
-	var speed = 43.28;
-    var voltage = 0;
+	var speed = 52;
+    var voltage = 62.34;
     var tripDistance=0;
     var current=0;
-    var temperature=0;
+    var temperature=41.23;
      var maxTemperature=65;
     var totalDistance=0;
     var PWM=0;
