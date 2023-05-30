@@ -5,35 +5,26 @@ import Toybox.WatchUi;
 import Toybox.Timer;
 
 class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
-  var eucBleDelegate = null;
-  var queue = null;
-  var parent_menu = null;
-  var menu as CheckboxMenu?;
-  var delay = 200;
-  var updateDelay = 500;
+  private var eucBleDelegate = null;
+  private var queue = null;
+  private var parent_menu = null;
+  private var menu as CheckboxMenu?;
+  private var delay = 200;
+  var requestSubLabelsUpdate = false;
+  private var subLabelsRefreshDuration = 20; // ~2 sec if 100ms timer in GarminEUCApp;
   var main_view;
-  var main_delegate;
-  var delayUpdate;
 
-  function initialize(
-    current_menu,
-    current_eucBleDelegate,
-    q,
-    m_view,
-    m_delegate
-  ) {
+  function initialize(current_menu, current_eucBleDelegate, q, m_view) {
     parent_menu = current_menu;
     eucBleDelegate = current_eucBleDelegate;
     queue = q;
     Menu2InputDelegate.initialize();
     main_view = m_view;
-    main_delegate = m_delegate;
-    delayUpdate = new Timer.Timer();
     updateSublabels();
   }
   function onBack() {
+    requestSubLabelsUpdate = false;
     WatchUi.popView(WatchUi.SLIDE_DOWN);
-    delayUpdate.stop();
   }
   function onSelect(item) {
     //System.println(item.getId().toString());
@@ -77,13 +68,13 @@ class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
       queue
     ); // a WatchUi.Menu2InputDelegate
     WatchUi.pushView(menu, delegate, WatchUi.SLIDE_IMMEDIATE);
-    delayUpdate.stop();
+    //delayUpdate.stop();
     return true;
   }
 
   function updateSublabels() {
     var menuToUpdate = parent_menu;
-    // System.println("call update labels");
+    System.println("call update labels");
     var valuesToUpdate = [
       eucData.dictLedMode.keys()[
         eucData.dictLedMode.values().indexOf(eucData.ledMode.toString())
@@ -101,7 +92,13 @@ class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
     if (menuToUpdate != null) {
       for (var i = 0; i < valuesToUpdate.size(); i++) {
         menuToUpdate.getItem(i + 1).setSubLabel(valuesToUpdate[i].toString()); // i+1 -> skipping first item (lights as no feedback on tesla)
+        //System.println(valuesToUpdate[i].toString());
       }
+    }
+    subLabelsRefreshDuration--;
+    if (subLabelsRefreshDuration <= 0) {
+      subLabelsRefreshDuration = 20;
+      requestSubLabelsUpdate = false;
     }
   }
   function uniqueCheck(parentMenuTitle, item) {
@@ -216,32 +213,13 @@ class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
       eucBleDelegate.sendCmd(cmd);
     }
     queue.delayTimer.start(method(:timerCallback), delay, true);
-    delayUpdate.start(method(:labelUpdate), updateDelay, true);
+    requestSubLabelsUpdate = true;
   }
-  /*
-hidden function string_to_byte_array(plain_text) {
-    var options = {
-		:fromRepresentation => StringUtil.REPRESENTATION_STRING_PLAIN_TEXT,
-        :toRepresentation => StringUtil.REPRESENTATION_BYTE_ARRAY,
-        :encoding => StringUtil.CHAR_ENCODING_UTF8
-    };
-      //System.println(Lang.format("Converting '$1$' to ByteArray", [ plain_text ]));
-    var result = StringUtil.convertEncodedString(plain_text, options);
- //   System.println(Lang.format("           '$1$'..", [ result ]));
-    
-    return result;
- }
-*/
+
   function timerCallback() {
     queue.run();
   }
-
-  function labelUpdate() {
-    updateSublabels();
-    WatchUi.requestUpdate();
-  }
 }
-
 /*
 //! Custom menu adapted from garmin sdk samples, I was using an icon to identify currently selected item but not showing on my garmin venu -> switched to checkbox items for menu
 class CustomEucMenu extends WatchUi.CustomMenu {
