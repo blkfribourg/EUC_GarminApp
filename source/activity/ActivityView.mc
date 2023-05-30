@@ -125,13 +125,12 @@ class ActivityRecordView extends WatchUi.View {
       method(:onPosition)
     );
   }
-  function onPosition(info as Info) as Void {
-    System.println("check gps:" + info.accuracy);
-    accuracy_msg = accuracy[info.accuracy];
-  }
+  function onPosition(info as Info) as Void {}
   //! Update the view
   //! @param dc Device context
   public function onUpdate(dc as Dc) as Void {
+    // Accuracy string
+    accuracy_msg = accuracy[Position.getInfo().accuracy];
     // Set background color
     dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
     dc.clear();

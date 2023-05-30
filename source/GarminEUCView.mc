@@ -5,12 +5,8 @@ using Toybox.Math;
 using Toybox.System;
 class GarminEUCView extends WatchUi.View {
   private var cDrawables = {};
-  private var timer;
-  private var current_PWM; // not sure the cost of calling the compute function is that High but as using pmw value several times, storing it
   function initialize() {
     View.initialize();
-
-    timer = new Timer.Timer();
   }
 
   function onLayout(dc as Dc) as Void {
@@ -38,13 +34,11 @@ class GarminEUCView extends WatchUi.View {
     );
 
     cDrawables[:TimeDate].setColor(Graphics.COLOR_WHITE);
-    timer.start(method(:onTimerUpdate), 100, true);
+    //timer.start(method(:onTimerUpdate), 100, true);
   }
 
   // Update the view
   function onUpdate(dc) {
-    current_PWM = eucData.getCalculatedtPWM().toFloat();
-
     // Update label drawables
     cDrawables[:TimeDate].setText(
       // Update time
@@ -74,7 +68,7 @@ class GarminEUCView extends WatchUi.View {
     );
 
     //cDrawables[:SpeedArc].setValues(WheelData.currentSpeed.toFloat(), WheelData.speedLimit);
-    cDrawables[:SpeedArc].setValues(current_PWM, 100);
+    cDrawables[:SpeedArc].setValues(eucData.getCalculatedtPWM().toFloat(), 100);
     cDrawables[:BatteryArc].setValues(batteryPercentage, 100);
     cDrawables[:TemperatureArc].setValues(
       eucData.temperature,
@@ -100,20 +94,4 @@ class GarminEUCView extends WatchUi.View {
   // state of this View here. This includes freeing resources from
   // memory.
   function onHide() as Void {}
-
-  // Timer callback
-  function onTimerUpdate() {
-    //System.println("onUpdate");
-    //eucData.speed=eucData.speed+1;
-    EUCAlarms.speedAlarmCheck(current_PWM); // fonction that trigger the alarm if pwm is too high
-    WatchUi.requestUpdate();
-  }
-
-  // Timer callback
-  function onTimerStop() {
-    //System.println("onTimerStop");
-    if (timer != null) {
-      timer.stop();
-    }
-  }
 }
