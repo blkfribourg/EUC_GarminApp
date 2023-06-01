@@ -6,6 +6,7 @@ import Toybox.System;
 import Toybox.WatchUi;
 import Toybox.Position;
 import Toybox.Timer;
+using Toybox.Time;
 
 class ActivityRecordDelegate extends WatchUi.BehaviorDelegate {
   private var _view as ActivityRecordView;
@@ -39,7 +40,7 @@ class ActivityRecordDelegate extends WatchUi.BehaviorDelegate {
 
   function onPreviousPage() {
     // WatchUi.switchToView(main_view, main_delegate, WatchUi.SLIDE_UP); // Switch to
-    WatchUi.popView(WatchUi.SLIDE_UP);
+    WatchUi.popView(WatchUi.SLIDE_DOWN);
     return true;
   }
 }
@@ -56,6 +57,8 @@ class ActivityRecordView extends WatchUi.View {
   private var running = false;
   private var fitTimer;
   private var _session as Session?;
+  private var startingMoment as Time.Moment?;
+  private var startingEUCTripDistance;
 
   //! Constructor
   public function initialize() {
@@ -98,6 +101,8 @@ class ActivityRecordView extends WatchUi.View {
       fitTimer.start(method(:updateFitData), 1000, true);
     }
     WatchUi.requestUpdate();
+    startingMoment = new Time.Moment(Time.now().value());
+    startingEUCTripDistance = eucData.tripDistance;
   }
 
   //! Load your resources here
@@ -126,10 +131,10 @@ class ActivityRecordView extends WatchUi.View {
     );
   }
   function onPosition(info as Info) as Void {}
+
   //! Update the view
   //! @param dc Device context
   public function onUpdate(dc as Dc) as Void {
-    // Accuracy string
     accuracy_msg = accuracy[Position.getInfo().accuracy];
     // Set background color
     dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
@@ -298,7 +303,6 @@ class ActivityRecordView extends WatchUi.View {
   private var maxPWM;
   private var maxCurrent;
   private var maxTemp;
-  private var runningsec;
   private var currentPWM;
 
   function updateFitData() {
@@ -327,11 +331,16 @@ class ActivityRecordView extends WatchUi.View {
       maxTemp = eucData.temperature;
       mMaxTempField.setData(maxTemp);
     }
-    if (runningsec > 0) {
-      mAvgSpeedField.setData(eucData.tripDistance / (runningsec / 3600));
-    }
 
-    runningsec++;
+    var currentMoment = new Time.Moment(Time.now().value());
+    var elaspedTime = startingMoment.subtract(currentMoment);
+    //System.println("elaspsed :"+elaspedTime.value());
+
+    mAvgSpeedField.setData(
+      (eucData.tripDistance - startingEUCTripDistance) /
+        (elaspedTime.value().toFloat() / 3600)
+    );
+
     WatchUi.requestUpdate();
   }
 
@@ -340,6 +349,5 @@ class ActivityRecordView extends WatchUi.View {
     maxPWM = 0.0;
     maxCurrent = 0.0;
     maxTemp = -255;
-    runningsec = 0.0;
   }
 }
