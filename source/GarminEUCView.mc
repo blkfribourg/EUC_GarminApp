@@ -34,7 +34,6 @@ class GarminEUCView extends WatchUi.View {
     );
 
     cDrawables[:TimeDate].setColor(Graphics.COLOR_WHITE);
-    //timer.start(method(:onTimerUpdate), 100, true);
   }
 
   // Update the view
