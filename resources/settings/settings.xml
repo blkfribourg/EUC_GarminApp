@@ -18,4 +18,31 @@
             max="100"
             errorMessage="@Strings.CIQ_ColoringThreshold_ErrorMessage" />
     </setting>
+    <setting
+        propertyKey="@Properties.RotationSpeed_PWM"
+        title="@Strings.RotationSpeed_PWM">
+        <settingConfig
+            type="numeric"
+            min="0"
+            max="140"
+            errorMessage="@Strings.RotationSpeed_PWM_ErrorMessage" />
+    </setting>
+   <setting
+        propertyKey="@Properties.rotationVoltage_PWM"
+        title="@Strings.rotationVoltage_PWM">
+        <settingConfig
+            type="numeric"
+            min="48"
+            max="136"
+            errorMessage="@Strings.rotationVoltage_ErrorMessage" />
+    </setting>
+       <setting
+        propertyKey="@Properties.powerFactor_PWM"
+        title="@Strings.powerFactor_PWM">
+        <settingConfig
+            type="numeric"
+            min="0"
+            max="1"
+            errorMessage="@Strings.powerFactor_PWM_ErrorMessage" />
+    </setting>
 </settings>

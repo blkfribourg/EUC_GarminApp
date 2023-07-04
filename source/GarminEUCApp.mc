@@ -22,6 +22,11 @@ class GarminEUCApp extends Application.AppBase {
   function onStart(state as Dictionary?) as Void {
     alarmsTimer.start(method(:onUpdateTimer), updateDelay, true);
     menu = new Rez.Menus.MainMenu();
+    eucData.setCalculatedPWM_vars(
+      AppStorage.getSetting("RotationSpeed_PWM"),
+      AppStorage.getSetting("rotationVoltage_PWM"),
+      AppStorage.getSetting("powerFactor_PWM")
+    );
   }
 
   // onStop() is called when your application is exiting

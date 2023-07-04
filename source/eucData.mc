@@ -3,16 +3,16 @@ using Toybox.System;
 module eucData {
   // Calculated PWM variables :
   // PLEASE UPDATE WITH YOU OWN VALUES BEFORE USE !
-  var rotationSpeed = 65.2; // cutoff speed when freespin test performed
-  var powerFactor = 0.9; // 0.9 for better safety
-  var rotationVoltage = 81.5; // voltage when freespin test performed
+  var rotationSpeed; // cutoff speed when freespin test performed
+  var powerFactor; // 0.9 for better safety
+  var rotationVoltage; // voltage when freespin test performed
 
   var deviceName = null;
   var voltage_scaling = 1.25;
   var speed = 0;
   var voltage = 0;
   var tripDistance = 0;
-  var current = 0;
+  var Phcurrent = 0;
   var temperature = 0;
   var maxTemperature = 65;
   var totalDistance = 0;
@@ -109,7 +109,19 @@ module eucData {
     }
     return battery;
   }
+  function setCalculatedPWM_vars(
+    _rotationSpeed,
+    _rotationVoltage,
+    _powerFactor
+  ) {
+    rotationSpeed = _rotationSpeed;
+    rotationVoltage = _rotationVoltage;
+    powerFactor = _powerFactor;
 
+    // rotationSpeed = 65.2; // cutoff speed when freespin test performed
+    //powerFactor = 0.9; // 0.9 for better safety
+    //rotationVoltage = 81.5; // voltage when freespin test performed
+  }
   function getCalculatedtPWM() {
     if (eucData.voltage != 0) {
       var CalculatedPWM =

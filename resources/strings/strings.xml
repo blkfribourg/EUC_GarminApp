@@ -1,5 +1,5 @@
 <strings>
-    <string id="AppName">GarminEUC</string>
+    <string id="AppName">WheelDash</string>
     
     <string id="MainMenuTitle">Settings</string>
     <string id="lightsModeMenu">Lights</string>
@@ -48,6 +48,15 @@
     <string id="CIQ_ColoringThreshold_ErrorMessage">You can't set PWM threshold larger than PWM range itself!</string>
     <string id="CIQ_RedColoringThreshold">PWM percentage threshold of coloring main arc in red</string>
 
+    <string id="RotationSpeed_PWM">Cutoff speed when performing free spin test</string>
+    <string id="RotationSpeed_PWM_ErrorMessage">Value out of range</string>
+
+<string id="rotationVoltage_PWM">Voltage when performing free spin test</string>
+    <string id="rotationVoltage_ErrorMessage">Value out of range</string>
+
+<string id="powerFactor_PWM">Power factor correction, don't touch it if you don't know what you're doing</string>
+    <string id="powerFactor_PWM_ErrorMessage">Value out of range</string>
+
     <string id="CIQ_BottomSubtitleData">Bottom subtitle</string>
     <string id="CIQ_BottomSubtitleData_WheelModel">Wheel model</string>
     <string id="CIQ_BottomSubtitleData_PWM">PWM / Max PWM</string>
@@ -76,6 +85,9 @@
     <string id="current_graph_label">Current</string>
     <string id="current_label">Current</string>
     <string id="current_units">A</string>
+    <string id="power_graph_label">Motor power</string>
+    <string id="power_label">Motor power</string>
+    <string id="power_units">W</string>
     <string id="temperature_graph_label">MB Temperature</string>
     <string id="temperature_label">MB Temperature</string>
     <string id="temperature_units">°C</string>
@@ -85,13 +97,20 @@
     <string id="maxSpeed_units">km/h</string>
     <string id="maxPWM_label">Session max PWM</string>
     <string id="maxPWM_units">%</string>
-    <string id="maxCurrent_label">Session max ph current</string>
+    <string id="maxCurrent_label">Session max current</string>
     <string id="maxCurrent_units">A</string>
+    <string id="maxPower_label">Session max power</string>
+    <string id="maxPower_units">W</string>
     <string id="maxTemperature_label">Session max temperature</string>
     <string id="maxTemperature_units">°C</string>
     <string id="avgSpeed_label">Session average speed</string>
     <string id="avgSpeed_units">km/h</string>
-
+    <string id="avgCurrent_label">Session average current</string>
+    <string id="avgCurrent_units">A</string>
+    <string id="avgPower_label">Session average power</string>
+    <string id="avgPower_units">W</string>
+    <string id="runningTime_label">Session running time (debug)</string>
+    <string id="runnintTime_units">s</string>
 
 
 </strings>
