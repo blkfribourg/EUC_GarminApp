@@ -127,7 +127,7 @@ class eucBLEDelegate extends Ble.BleDelegate {
             :offset => 6,
             :endianness => Lang.ENDIAN_BIG,
           }) / 1000; //in km
-        eucData.current =
+        eucData.Phcurrent =
           value
             .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
               :offset => 10,

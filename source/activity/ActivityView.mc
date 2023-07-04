@@ -7,6 +7,7 @@ import Toybox.WatchUi;
 import Toybox.Position;
 import Toybox.Timer;
 using Toybox.Time;
+using Toybox.Math;
 
 class ActivityRecordDelegate extends WatchUi.BehaviorDelegate {
   private var _view as ActivityRecordView;
@@ -209,18 +210,24 @@ class ActivityRecordView extends WatchUi.View {
   const PWM_FIELD_ID = 1;
   const VOLTAGE_FIELD_ID = 2;
   const CURRENT_FIELD_ID = 3;
-  const TEMP_FIELD_ID = 4;
-  const TRIPDISTANCE_FIELD_ID = 5;
-  const MAXSPEED_FIELD_ID = 6;
-  const MAXPWM_FIELD_ID = 7;
-  const MAXCURRENT_FIELD_ID = 8;
-  const MAXPOWER_FIELD_ID = 9;
-  const MAXTEMP_FIELD_ID = 10;
-  const AVGSPEED_FIELD_ID = 11;
+  const POWER_FIELD_ID = 4;
+  const TEMP_FIELD_ID = 5;
+  const TRIPDISTANCE_FIELD_ID = 6;
+  const MAXSPEED_FIELD_ID = 7;
+  const MAXPWM_FIELD_ID = 8;
+  const MAXCURRENT_FIELD_ID = 9;
+  const MAXPOWER_FIELD_ID = 10;
+  const MAXTEMP_FIELD_ID = 11;
+  const AVGSPEED_FIELD_ID = 12;
+  const AVGCURRENT_FIELD_ID = 13;
+  const AVGPOWER_FIELD_ID = 14;
+  const RUNNINGTIME_FIELD_ID = 15;
+
   hidden var mSpeedField;
   hidden var mPWMField;
   hidden var mVoltageField;
   hidden var mCurrentField;
+  hidden var mPowerField;
   hidden var mTempField;
   hidden var mTripDistField;
   hidden var mMaxSpeedField;
@@ -229,6 +236,9 @@ class ActivityRecordView extends WatchUi.View {
   hidden var mMaxPowerField;
   hidden var mMaxTempField;
   hidden var mAvgSpeedField;
+  hidden var mAvgCurrentField;
+  hidden var mAvgPowerField;
+  hidden var mRunningTimeDebugField;
 
   // Initializes the new fields in the activity file
   function setupField(session as Session) {
@@ -255,6 +265,12 @@ class ActivityRecordView extends WatchUi.View {
       CURRENT_FIELD_ID,
       FitContributor.DATA_TYPE_FLOAT,
       { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "A" }
+    );
+    mPowerField = session.createField(
+      "current_Power",
+      POWER_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "W" }
     );
     mTempField = session.createField(
       "current_Temperature",
@@ -286,6 +302,12 @@ class ActivityRecordView extends WatchUi.View {
       FitContributor.DATA_TYPE_FLOAT,
       { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "A" }
     );
+    mMaxPowerField = session.createField(
+      "session_Max_Current",
+      MAXPOWER_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "W" }
+    );
     mMaxTempField = session.createField(
       "session_Max_Temperature",
       MAXTEMP_FIELD_ID,
@@ -298,49 +320,90 @@ class ActivityRecordView extends WatchUi.View {
       FitContributor.DATA_TYPE_FLOAT,
       { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km/h" }
     );
+    mAvgCurrentField = session.createField(
+      "session_Avg_Current",
+      AVGCURRENT_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "A" }
+    );
+    mAvgPowerField = session.createField(
+      "session_Avg_Power",
+      AVGPOWER_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "W" }
+    );
+    mRunningTimeDebugField = session.createField(
+      "session_Running_Time",
+      RUNNINGTIME_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "s" }
+    );
   }
   private var maxSpeed;
   private var maxPWM;
   private var maxCurrent;
+  private var maxPower;
   private var maxTemp;
   private var currentPWM;
+  private var currentCurrent;
+  private var sumCurrent;
+  private var callNb;
+  private var currentPower;
+  private var sumPower;
+  private var SessionDistance;
 
   function updateFitData() {
-    //System.println("compute called");
+    callNb++;
+
     currentPWM = eucData.getCalculatedtPWM();
-    mSpeedField.setData(eucData.speed);
-    mPWMField.setData(currentPWM);
-    mVoltageField.setData(eucData.voltage * eucData.voltage_scaling);
-    mCurrentField.setData(eucData.current);
-    mTempField.setData(eucData.temperature);
-    mTripDistField.setData(eucData.tripDistance);
+    currentCurrent = (currentPWM / 100) * eucData.Phcurrent;
+    currentPower = currentCurrent * eucData.voltage * eucData.voltage_scaling;
+    SessionDistance = eucData.tripDistance - startingEUCTripDistance;
+    mSpeedField.setData(eucData.speed); // id 0
+    mPWMField.setData(currentPWM); //id 1
+    mVoltageField.setData(eucData.voltage * eucData.voltage_scaling); // id 2
+    mCurrentField.setData(currentCurrent); // id 3
+    mPowerField.setData(currentPower); // id 4
+    mTempField.setData(eucData.temperature); // id 5
+    mTripDistField.setData(SessionDistance); // id 6
 
     if (eucData.speed > maxSpeed) {
       maxSpeed = eucData.speed;
-      mMaxSpeedField.setData(maxSpeed);
+      mMaxSpeedField.setData(maxSpeed); // id 7
     }
     if (currentPWM > maxPWM) {
       maxPWM = currentPWM;
-      mMaxPWMField.setData(maxPWM);
+      mMaxPWMField.setData(maxPWM); // id 8
     }
-    if (eucData.current > maxCurrent) {
-      maxCurrent = eucData.current;
-      mMaxCurrentField.setData(maxCurrent);
+    if (currentCurrent > maxCurrent) {
+      maxCurrent = currentCurrent;
+      mMaxCurrentField.setData(maxCurrent); // id 9
+    }
+    if (currentPower > maxPower) {
+      maxPower = currentPower;
+      mMaxPowerField.setData(maxPower); // id 10
     }
     if (eucData.temperature > maxTemp) {
       maxTemp = eucData.temperature;
-      mMaxTempField.setData(maxTemp);
+      mMaxTempField.setData(maxTemp); // id 11
     }
 
     var currentMoment = new Time.Moment(Time.now().value());
     var elaspedTime = startingMoment.subtract(currentMoment);
-    //System.println("elaspsed :"+elaspedTime.value());
+    //System.println("elaspsed :" + elaspedTime.value());
 
     mAvgSpeedField.setData(
-      (eucData.tripDistance - startingEUCTripDistance) /
-        (elaspedTime.value().toFloat() / 3600)
-    );
+      SessionDistance / (elaspedTime.value().toFloat() / 3600)
+    ); // id 12
 
+    sumCurrent = sumCurrent + currentCurrent;
+    sumPower = sumPower + currentPower;
+    mAvgCurrentField.setData(sumCurrent / callNb); // id 13
+    mAvgPowerField.setData(sumPower / callNb); // id 14
+
+    mRunningTimeDebugField.setData(elaspedTime.value());
+
+    // add Trip distance from EUC
     WatchUi.requestUpdate();
   }
 
@@ -348,6 +411,10 @@ class ActivityRecordView extends WatchUi.View {
     maxSpeed = 0.0;
     maxPWM = 0.0;
     maxCurrent = 0.0;
+    maxPower = 0.0;
     maxTemp = -255;
+    sumCurrent = 0.0;
+    sumPower = 0.0;
+    callNb = 0;
   }
 }
