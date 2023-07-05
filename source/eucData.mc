@@ -8,7 +8,7 @@ module eucData {
   var rotationVoltage; // voltage when freespin test performed
 
   var deviceName = null;
-  var voltage_scaling = 1.25;
+  var voltage_scaling;
   var speed = 0;
   var voltage = 0;
   var tripDistance = 0;
@@ -99,28 +99,26 @@ module eucData {
     var battery = 0;
     // using better battery formula from wheellog :
     if (voltage > 66.8) {
-      battery = 100;
+      battery = 100.0;
     } else if (voltage > 54.4) {
       battery = (voltage - 53.8) / 0.13;
     } else if (voltage > 52.9) {
       battery = (voltage - 52.9) / 0.325;
     } else {
-      battery = 0;
+      battery = 0.0;
     }
     return battery;
   }
-  function setCalculatedPWM_vars(
+  function setSettings(
     _rotationSpeed,
     _rotationVoltage,
-    _powerFactor
+    _powerFactor,
+    _VoltageFactor
   ) {
     rotationSpeed = _rotationSpeed;
     rotationVoltage = _rotationVoltage;
     powerFactor = _powerFactor;
-
-    // rotationSpeed = 65.2; // cutoff speed when freespin test performed
-    //powerFactor = 0.9; // 0.9 for better safety
-    //rotationVoltage = 81.5; // voltage when freespin test performed
+    voltage_scaling = _VoltageFactor;
   }
   function getCalculatedtPWM() {
     if (eucData.voltage != 0) {

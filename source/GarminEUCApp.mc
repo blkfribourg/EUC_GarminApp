@@ -22,10 +22,11 @@ class GarminEUCApp extends Application.AppBase {
   function onStart(state as Dictionary?) as Void {
     alarmsTimer.start(method(:onUpdateTimer), updateDelay, true);
     menu = new Rez.Menus.MainMenu();
-    eucData.setCalculatedPWM_vars(
+    eucData.setSettings(
       AppStorage.getSetting("RotationSpeed_PWM"),
       AppStorage.getSetting("rotationVoltage_PWM"),
-      AppStorage.getSetting("powerFactor_PWM")
+      AppStorage.getSetting("powerFactor_PWM"),
+      AppStorage.getSetting("VoltageCorrectionFactor")
     );
   }
 

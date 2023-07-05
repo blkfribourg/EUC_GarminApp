@@ -82,7 +82,7 @@ class eucBLEDelegate extends Ble.BleDelegate {
           value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
             :offset => 6,
             :endianness => Lang.ENDIAN_BIG,
-          }) / 1000; // in km
+          }) / 1000.0; // in km
         settings = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
           :offset => 10,
           :endianness => Lang.ENDIAN_BIG,
@@ -121,19 +121,19 @@ class eucBLEDelegate extends Ble.BleDelegate {
               :offset => 2,
               :endianness => Lang.ENDIAN_BIG,
             })
-            .abs() / 100;
+            .abs() / 100.0;
         eucData.tripDistance =
           value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
             :offset => 6,
             :endianness => Lang.ENDIAN_BIG,
-          }) / 1000; //in km
+          }) / 1000.0; //in km
         eucData.Phcurrent =
           value
             .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
               :offset => 10,
               :endianness => Lang.ENDIAN_BIG,
             })
-            .abs() / 100;
+            .abs() / 100.0;
         eucData.temperature =
           value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
             :offset => 12,

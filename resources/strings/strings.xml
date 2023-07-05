@@ -48,13 +48,16 @@
     <string id="CIQ_ColoringThreshold_ErrorMessage">You can't set PWM threshold larger than PWM range itself!</string>
     <string id="CIQ_RedColoringThreshold">PWM percentage threshold of coloring main arc in red</string>
 
+    <string id="VoltageCorrectionFactor">Voltage Correction Factor, 1 for 67V, 1.25 for 84V ...</string>
+    <string id="VoltageCorrectionFactor_ErrorMessage">Value out of range</string>
+    
     <string id="RotationSpeed_PWM">Cutoff speed when performing free spin test</string>
     <string id="RotationSpeed_PWM_ErrorMessage">Value out of range</string>
 
-<string id="rotationVoltage_PWM">Voltage when performing free spin test</string>
+    <string id="rotationVoltage_PWM">Voltage when performing free spin test</string>
     <string id="rotationVoltage_ErrorMessage">Value out of range</string>
 
-<string id="powerFactor_PWM">Power factor correction, don't touch it if you don't know what you're doing</string>
+    <string id="powerFactor_PWM">Power factor correction, don't touch it if you don't know what you're doing</string>
     <string id="powerFactor_PWM_ErrorMessage">Value out of range</string>
 
     <string id="CIQ_BottomSubtitleData">Bottom subtitle</string>
