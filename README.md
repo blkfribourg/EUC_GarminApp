@@ -1,4 +1,4 @@
-Important : if you intend to use this app, please first modify calculated PWM variables in file eucData.mc.
+Important : if you intend to use this app, please first modify app settings in Garmin Connect depending on your euc.
 
 This is a standalone application that currently only works with Begode wheels and is designed to run on a Garmin Venu.
 

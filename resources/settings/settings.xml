@@ -19,6 +19,15 @@
             errorMessage="@Strings.CIQ_ColoringThreshold_ErrorMessage" />
     </setting>
     <setting
+        propertyKey="@Properties.VoltageCorrectionFactor"
+        title="@Strings.VoltageCorrectionFactor">
+        <settingConfig
+            type="numeric"
+            min="0"
+            max="2"
+            errorMessage="@Strings.VoltageCorrectionFactor_ErrorMessage" />
+    </setting>
+    <setting
         propertyKey="@Properties.RotationSpeed_PWM"
         title="@Strings.RotationSpeed_PWM">
         <settingConfig
