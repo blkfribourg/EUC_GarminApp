@@ -66,11 +66,19 @@ class eucBLEDelegate extends Ble.BleDelegate {
   function onCharacteristicChanged(char, value) {
     var head = new [20]b;
     // I should be buffering the frames tranmitted by the wheels rather than identifying that way because it probably wouldn't work with custom firmwares
-
+    //System.println("Frame content :" + value.toString());
     if (value.size() == 20) {
       head = value;
 
-      if (head[11].toNumber() == 0 && head[12].toNumber() == 28) {
+      //if (head[11].toNumber() == 0 && head[12].toNumber() == 28) {
+      if (
+        head[0].toNumber() == 90 &&
+        head[1].toNumber() == 90 &&
+        head[2].toNumber() == 90 &&
+        head[3].toNumber() == 90 &&
+        head[4].toNumber() == 85 &&
+        head[5].toNumber() == 170
+      ) {
         //Frame B
         strB =
           head[11].toString() +
@@ -98,7 +106,8 @@ class eucBLEDelegate extends Ble.BleDelegate {
         eucData.ledMode = value[17].toNumber(); // 12 in euc dashboard by freestyl3r
         //eucData.lightMode=value[19]&0x03; unable to get light mode from wheel
         //System.println("light mode (frameA ):"+eucData.lightMode);
-      } else {
+      }
+      if (head[0].toNumber() == 85 && head[1].toNumber() == 170) {
         //Frame A
         strA =
           head[4].toString() +
