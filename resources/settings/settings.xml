@@ -1,40 +1,47 @@
 <settings>
-
+ <setting
+        propertyKey="@Properties.actionButton"
+        title="@Strings.actionButton">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.buttonActionNone</listEntry>
+            <listEntry value="1">@Strings.buttonActionLights</listEntry>
+        </settingConfig>
+    </setting>
     <setting
-        propertyKey="@Properties.OrangeColoringThreshold"
-        title="@Strings.CIQ_OrangeColoringThreshold">
+        propertyKey="@Properties.orangeColoringThreshold"
+        title="@Strings.orangeColoringThreshold">
         <settingConfig
             type="numeric"
             min="0"
             max="100"
-            errorMessage="@Strings.CIQ_ColoringThreshold_ErrorMessage" />
+            errorMessage="@Strings.coloringThreshold_ErrorMessage" />
     </setting>
     <setting
-        propertyKey="@Properties.RedColoringThreshold"
-        title="@Strings.CIQ_RedColoringThreshold">
+        propertyKey="@Properties.redColoringThreshold"
+        title="@Strings.redColoringThreshold">
         <settingConfig
             type="numeric"
             min="0"
             max="100"
-            errorMessage="@Strings.CIQ_ColoringThreshold_ErrorMessage" />
+            errorMessage="@Strings.coloringThreshold_ErrorMessage" />
     </setting>
     <setting
-        propertyKey="@Properties.VoltageCorrectionFactor"
-        title="@Strings.VoltageCorrectionFactor">
+        propertyKey="@Properties.voltageCorrectionFactor"
+        title="@Strings.voltageCorrectionFactor">
         <settingConfig
             type="numeric"
             min="0"
             max="2"
-            errorMessage="@Strings.VoltageCorrectionFactor_ErrorMessage" />
+            errorMessage="@Strings.voltageCorrectionFactor_ErrorMessage" />
     </setting>
     <setting
-        propertyKey="@Properties.RotationSpeed_PWM"
-        title="@Strings.RotationSpeed_PWM">
+        propertyKey="@Properties.rotationSpeed_PWM"
+        title="@Strings.rotationSpeed_PWM">
         <settingConfig
             type="numeric"
             min="0"
             max="140"
-            errorMessage="@Strings.RotationSpeed_PWM_ErrorMessage" />
+            errorMessage="@Strings.rotationSpeed_PWM_ErrorMessage" />
     </setting>
    <setting
         propertyKey="@Properties.rotationVoltage_PWM"

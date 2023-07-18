@@ -23,11 +23,13 @@ class GarminEUCApp extends Application.AppBase {
     alarmsTimer.start(method(:onUpdateTimer), updateDelay, true);
     menu = new Rez.Menus.MainMenu();
     eucData.setSettings(
-      AppStorage.getSetting("RotationSpeed_PWM"),
+      AppStorage.getSetting("rotationSpeed_PWM"),
       AppStorage.getSetting("rotationVoltage_PWM"),
       AppStorage.getSetting("powerFactor_PWM"),
-      AppStorage.getSetting("VoltageCorrectionFactor")
+      AppStorage.getSetting("voltageCorrectionFactor"),
+      AppStorage.getSetting("actionButton")
     );
+    rideStats.movingmsec = 0;
   }
 
   // onStop() is called when your application is exiting
@@ -68,6 +70,8 @@ class GarminEUCApp extends Application.AppBase {
     if (menu2Delegate.requestSubLabelsUpdate == true) {
       menu2Delegate.updateSublabels();
     }
+    rideStats.avgSpeed();
+    rideStats.topSpeed();
 
     WatchUi.requestUpdate();
   }

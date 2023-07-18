@@ -19,7 +19,6 @@ class ArcRenderer extends WatchUi.Drawable {
 
   var currentValue = 0,
     maxValue = 0;
-  var computedPercentageLoadDrop = 200;
   private var screenCenterX = System.getDeviceSettings().screenWidth / 2;
   private var screenCenterY = System.getDeviceSettings().screenHeight / 2;
 
@@ -87,12 +86,13 @@ class ArcRenderer extends WatchUi.Drawable {
       case :speedArc: {
         if (currentValue != 0.0) {
           if (
-            currentValue >= AppStorage.getSetting("OrangeColoringThreshold") &&
-            currentValue < AppStorage.getSetting("RedColoringThreshold")
+            //should move appstorage values elsewhere
+            currentValue >= AppStorage.getSetting("orangeColoringThreshold") &&
+            currentValue < AppStorage.getSetting("redColoringThreshold")
           ) {
             foregroundColor = mSecondColor;
           } else if (
-            currentValue >= AppStorage.getSetting("RedColoringThreshold")
+            currentValue >= AppStorage.getSetting("redColoringThreshold")
           ) {
             foregroundColor = mThirdColor;
           } else {
@@ -149,8 +149,9 @@ class ArcRenderer extends WatchUi.Drawable {
       case :batteryArc: {
         // if no sag value :
         var batteryPercentage = eucData.getBatteryPercentage();
-        if (computedPercentageLoadDrop > batteryPercentage.toNumber()) {
-          computedPercentageLoadDrop = batteryPercentage.toNumber();
+        // BatterySag, move elsewhere ?
+        if (eucData.lowestBatteryPercentage > batteryPercentage.toNumber()) {
+          eucData.lowestBatteryPercentage = batteryPercentage.toNumber();
         }
 
         if (currentValue >= maxValue) {
@@ -185,7 +186,7 @@ class ArcRenderer extends WatchUi.Drawable {
           // Render yellow arc
 
           var percentage =
-            computedPercentageLoadDrop.toFloat() / maxValue.toFloat();
+            eucData.lowestBatteryPercentage.toFloat() / maxValue.toFloat();
           var result = degreeRange - degreeRange * percentage + mEndDegree;
           if (result != mStartDegree) {
             dc.drawArc(

@@ -6,12 +6,14 @@ module eucData {
   var rotationSpeed; // cutoff speed when freespin test performed
   var powerFactor; // 0.9 for better safety
   var rotationVoltage; // voltage when freespin test performed
+  var actionButton;
 
   var deviceName = null;
   var voltage_scaling;
-  var speed = 0;
+  var speed = 0.0;
   var voltage = 0;
-  var tripDistance = 0;
+  var lowestBatteryPercentage = 101;
+  var tripDistance = 0.0;
   var Phcurrent = 0;
   var temperature = 0;
   var maxTemperature = 65;
@@ -22,6 +24,8 @@ module eucData {
   var rollAngleMode = "0";
   var speedUnitMode = 0;
   var ledMode = "0";
+  var avgMovingSpeed = 0.0;
+  var topSpeed = 0.0;
   //var volume="1";
   //var lightMode="0";
 
@@ -113,12 +117,15 @@ module eucData {
     _rotationSpeed,
     _rotationVoltage,
     _powerFactor,
-    _VoltageFactor
+    _voltageFactor,
+    _actionButton
+
   ) {
     rotationSpeed = _rotationSpeed;
     rotationVoltage = _rotationVoltage;
     powerFactor = _powerFactor;
-    voltage_scaling = _VoltageFactor;
+    voltage_scaling = _voltageFactor;
+    actionButton= _actionButton;
   }
   function getCalculatedtPWM() {
     if (eucData.voltage != 0) {

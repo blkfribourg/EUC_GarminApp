@@ -67,6 +67,7 @@ class ActivityRecordView extends WatchUi.View {
     if (fitTimer == null) {
       fitTimer = new Timer.Timer();
     }
+    accuracy_msg = accuracy[Position.getInfo().accuracy];
   }
 
   //! Stop the recording if necessary

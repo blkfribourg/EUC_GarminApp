@@ -6,8 +6,6 @@ import Toybox.Lang;
 class eucBLEDelegate extends Ble.BleDelegate {
   var profileManager = null;
   var device = null;
-  var strA = "";
-  var strB = "";
   var settings = 0x0000;
   var service = null;
   var char = null;
@@ -64,102 +62,7 @@ class eucBLEDelegate extends Ble.BleDelegate {
   function onCharacteristicWrite(desc, status) {}
 
   function onCharacteristicChanged(char, value) {
-    var head = new [20]b;
-    // I should be buffering the frames tranmitted by the wheels rather than identifying that way because it probably wouldn't work with custom firmwares
-    //System.println("Frame content :" + value.toString());
-    if (value.size() == 20) {
-      head = value;
-
-      //if (head[11].toNumber() == 0 && head[12].toNumber() == 28) {
-      if (
-        head[0].toNumber() == 90 &&
-        head[1].toNumber() == 90 &&
-        head[2].toNumber() == 90 &&
-        head[3].toNumber() == 90 &&
-        head[4].toNumber() == 85 &&
-        head[5].toNumber() == 170
-      ) {
-        //Frame B
-        strB =
-          head[11].toString() +
-          "," +
-          head[12].toString() +
-          "," +
-          head[13].toString();
-        eucData.totalDistance =
-          value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
-            :offset => 6,
-            :endianness => Lang.ENDIAN_BIG,
-          }) / 1000.0; // in km
-        settings = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-          :offset => 10,
-          :endianness => Lang.ENDIAN_BIG,
-        });
-
-        //Sys.println("byte 10 :"+settings);
-
-        eucData.pedalMode = (settings >> 13) & 0x03;
-        eucData.speedAlertMode = (settings >> 10) & 0x03;
-        eucData.rollAngleMode = (settings >> 7) & 0x03;
-        //System.println("read angle mode: "+(settings>>7)&0x03);
-        //eucData.speedUnitMode  = value[10]&0x1;
-        eucData.ledMode = value[17].toNumber(); // 12 in euc dashboard by freestyl3r
-        //eucData.lightMode=value[19]&0x03; unable to get light mode from wheel
-        //System.println("light mode (frameA ):"+eucData.lightMode);
-      }
-      if (head[0].toNumber() == 85 && head[1].toNumber() == 170) {
-        //Frame A
-        strA =
-          head[4].toString() +
-          "," +
-          head[5].toString() +
-          "," +
-          head[6].toString();
-        eucData.speed =
-          (value
-            .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-              :offset => 4,
-              :endianness => Lang.ENDIAN_BIG,
-            })
-            .abs() *
-            3.6) /
-          100;
-        eucData.voltage =
-          value
-            .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-              :offset => 2,
-              :endianness => Lang.ENDIAN_BIG,
-            })
-            .abs() / 100.0;
-        eucData.tripDistance =
-          value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
-            :offset => 6,
-            :endianness => Lang.ENDIAN_BIG,
-          }) / 1000.0; //in km
-        eucData.Phcurrent =
-          value
-            .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-              :offset => 10,
-              :endianness => Lang.ENDIAN_BIG,
-            })
-            .abs() / 100.0;
-        eucData.temperature =
-          value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-            :offset => 12,
-            :endianness => Lang.ENDIAN_BIG,
-          }) /
-            340 +
-          36.53;
-        //eucData.volume=(value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 16 ,:endianness => Lang.ENDIAN_BIG}));
-        //eucData.PWM=value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 14 ,:endianness => Lang.ENDIAN_BIG})*10;
-        //System.println("PWM data "+ eucData.PWM);
-      }
-    }
-    /*  
-     if(value.size()==8){
-            // tail frame A and head of frame B nothing here         
-        }
-    */
+    frameBuffer(value);
   }
 
   function sendCmd(cmd) {
@@ -204,6 +107,122 @@ class eucBLEDelegate extends Ble.BleDelegate {
   function getPMService() {
     return profileManager.EUC_SERVICE;
   }
+
+  function frameBuffer(transmittedFrame) {
+    for (var i = 0; i < transmittedFrame.size(); i++) {
+      if (checkChar(transmittedFrame[i]) == true) {
+        // process frame and guess type
+        if (frame[18].toNumber() == 0) {
+          // Frame A
+          //System.println("Frame A detected");
+          processFrameA(frame);
+        } else if (frame[18].toNumber() == 4) {
+          // Frame B
+          //System.println("Frame B detected");
+          processFrameB(frame);
+        }
+      }
+    }
+  }
+
+  // adapted from wheellog
+  var oldc;
+  var frame as ByteArray?;
+  var state = "unknown";
+  function checkChar(c) {
+    if (state.equals("collecting")) {
+      frame.add(c);
+      oldc = c;
+
+      var size = frame.size();
+
+      if (
+        (size == 20 && c.toNumber() != 24) ||
+        (size > 20 && size <= 24 && c.toNumber() != 90)
+      ) {
+        state = "unknown";
+        return false;
+      }
+
+      if (size == 24) {
+        state = "done";
+        return true;
+      }
+    } else {
+      if (oldc != null && oldc.toNumber() == 85 && c.toNumber() == 170) {
+        // beguining of a frame
+        frame = new [0]b;
+        frame.add(85);
+        frame.add(170);
+        state = "collecting";
+      }
+      oldc = c;
+    }
+    return false;
+  }
+
+  function processFrameB(value) {
+    eucData.totalDistance =
+      value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
+        :offset => 2,
+        :endianness => Lang.ENDIAN_BIG,
+      }) / 1000.0; // in km
+    settings = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+      :offset => 6,
+      :endianness => Lang.ENDIAN_BIG,
+    });
+
+    //Sys.println("byte 10 :"+settings);
+
+    eucData.pedalMode = (settings >> 13) & 0x03;
+    eucData.speedAlertMode = (settings >> 10) & 0x03;
+    eucData.rollAngleMode = (settings >> 7) & 0x03;
+    //System.println("read angle mode: "+(settings>>7)&0x03);
+    //eucData.speedUnitMode  = value[10]&0x1;
+    eucData.ledMode = value[13].toNumber(); // 12 in euc dashboard by freestyl3r
+    //eucData.lightMode=value[19]&0x03; unable to get light mode from wheel
+    //System.println("light mode (frameA ):"+eucData.lightMode);
+  }
+  function processFrameA(value) {
+    eucData.speed =
+      (value
+        .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+          :offset => 4,
+          :endianness => Lang.ENDIAN_BIG,
+        })
+        .abs() *
+        3.6) /
+      100;
+    eucData.voltage =
+      value
+        .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+          :offset => 2,
+          :endianness => Lang.ENDIAN_BIG,
+        })
+        .abs() / 100.0;
+    eucData.tripDistance =
+      value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
+        :offset => 6,
+        :endianness => Lang.ENDIAN_BIG,
+      }) / 1000.0; //in km
+    eucData.Phcurrent =
+      value
+        .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+          :offset => 10,
+          :endianness => Lang.ENDIAN_BIG,
+        })
+        .abs() / 100.0;
+    eucData.temperature =
+      value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+        :offset => 12,
+        :endianness => Lang.ENDIAN_BIG,
+      }) /
+        340 +
+      36.53;
+    //eucData.volume=(value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 16 ,:endianness => Lang.ENDIAN_BIG}));
+    //eucData.PWM=value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, { :offset => 14 ,:endianness => Lang.ENDIAN_BIG})*10;
+    //System.println("PWM data "+ eucData.PWM);
+  }
 }
 
 /*
@@ -216,17 +235,6 @@ class eucBLEDelegate extends Ble.BleDelegate {
     data come in variable-size chunks with arbitrary delays between chunks. Some
     bytes may even be lost in case of BLE transmit buffer overflow.
 
-
-    Blkfri : Garmin splits in 2 the array because it supports 20 bytes length max. As a result Frame is troncated at byte 19
-
-    Frame B : one of size 20 ranging from 20 to 15 (reading sequence as a loop) -> head 
-    Frame B :one of size 8 ranging from 16 to 23 (so there is a redundancy from 20 to 23) -> tail
-
-    The only way to properly determine frame is to rely on "unknown" bytes that do not change on Frame B to guess the frame type -> 00 1C 20 (7 8 9) & 00 07 (14 15) . On my tesla V2 index 9 is not always 20, it's also 1F sometimes so finaly not using index 9 (=13 because of Garmin shift) for checking
-
-    As byte arrays are shifted it means idx 11->13 and 18->19
-
-    check tramB :  00 1C  & 00 07 (14 15)
 
 
          0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 | 16 17 18 19 20 21 22 23

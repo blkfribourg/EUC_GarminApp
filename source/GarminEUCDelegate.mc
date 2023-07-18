@@ -37,4 +37,16 @@ class GarminEUCDelegate extends WatchUi.BehaviorDelegate {
     ); // Switch to activity view
     return true;
   }
+
+  function onKey(keyEvent as WatchUi.KeyEvent) {
+    if (keyEvent.getKey().equals(WatchUi.KEY_ENTER)) {
+      System.print("OK");
+      ActionButton.triggerAction(eucBleDelegate);
+    }
+    if (keyEvent.getKey().equals(WatchUi.KEY_ESC)) {
+      WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
+    }
+
+    return true;
+  }
 }

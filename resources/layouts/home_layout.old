@@ -57,11 +57,11 @@
         <param name="arcMaxValue">65</param>
     </drawable>
 
-    <label id="BottomSubtitle"
+   <label id="BottomSubtitle"
         text=""
         x="50%"
         y="80%"
         justification="Gfx.TEXT_JUSTIFY_CENTER"
-        font="Gfx.FONT_MEDIUM"
+        font="@Fonts.Gorga"
         color="0xA4A4A4" />
 </layout>

@@ -8,7 +8,6 @@
         chartTitle="@Strings.pwm_graph_label" dataLabel="@Strings.pwm_label"
         unitLabel="@Strings.pwm_units" fillColor="#FF0000" />
 
-
         <fitField id="2" displayInChart="true" sortOrder = "2" precision="2"
         chartTitle="@Strings.voltage_graph_label" dataLabel="@Strings.voltage_label"
         unitLabel="@Strings.voltage_units" fillColor="#FF0000" />
@@ -64,14 +63,6 @@
         <fitField id="15" displayInChart="false" displayInActivitySummary="true" sortOrder = "15" precision="2"
         dataLabel="@Strings.runningTime_label"
         unitLabel="@Strings.runnintTime_units"/>
-
-
-
-
-
-
-
-
 
 
     </fitContributions>

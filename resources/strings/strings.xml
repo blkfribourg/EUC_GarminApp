@@ -8,8 +8,6 @@
     <string id="ledModeMenu">Leds mode</string>
     <string id="cutoffAngleMenu">Cutoff Angle</string>
     <string id="volumeMenu">Beep volume</string>
-    
-
 
     <string id="prompt">Speed</string>
     <string id="speed_lbl">Speed:</string>
@@ -40,38 +38,25 @@
 
     <!-- Strings, that are used in Connect IQ Settings menu, like 
         one you see in Garmin Express or Garmin Connect Mobile -->
-    
-    <string id="CIQ_DataUpdateSpeed">Data update speed</string>
-    <string id="CIQ_DataUpdateSpeed_SuperSlow">Super slow</string>
+    <string id="actionButton">Action when OK button pressed</string>
+    <string id="buttonActionNone">None</string>
+    <string id="buttonActionLights">Toggle lights</string>
 
-    <string id="CIQ_OrangeColoringThreshold">Orange PWM coloring threshold</string>
-    <string id="CIQ_ColoringThreshold_ErrorMessage">You can't set PWM threshold larger than PWM range itself!</string>
-    <string id="CIQ_RedColoringThreshold">PWM percentage threshold of coloring main arc in red</string>
+    <string id="orangeColoringThreshold">Orange PWM coloring threshold</string>
+    <string id="coloringThreshold_ErrorMessage">You can't set PWM threshold larger than PWM range itself!</string>
+    <string id="redColoringThreshold">PWM percentage threshold of coloring main arc in red</string>
 
-    <string id="VoltageCorrectionFactor">Voltage Correction Factor, 1 for 67V, 1.25 for 84V ...</string>
-    <string id="VoltageCorrectionFactor_ErrorMessage">Value out of range</string>
+    <string id="voltageCorrectionFactor">Voltage Correction Factor, 1 for 67V, 1.25 for 84V ...</string>
+    <string id="voltageCorrectionFactor_ErrorMessage">Value out of range</string>
     
-    <string id="RotationSpeed_PWM">Cutoff speed when performing free spin test</string>
-    <string id="RotationSpeed_PWM_ErrorMessage">Value out of range</string>
+    <string id="rotationSpeed_PWM">Cutoff speed when performing free spin test</string>
+    <string id="rotationSpeed_PWM_ErrorMessage">Value out of range</string>
 
     <string id="rotationVoltage_PWM">Voltage when performing free spin test</string>
     <string id="rotationVoltage_ErrorMessage">Value out of range</string>
 
     <string id="powerFactor_PWM">Power factor correction, don't touch it if you don't know what you're doing</string>
     <string id="powerFactor_PWM_ErrorMessage">Value out of range</string>
-
-    <string id="CIQ_BottomSubtitleData">Bottom subtitle</string>
-    <string id="CIQ_BottomSubtitleData_WheelModel">Wheel model</string>
-    <string id="CIQ_BottomSubtitleData_PWM">PWM / Max PWM</string>
-    <string id="CIQ_BottomSubtitleData_Speed">Average Speed / Max Speed</string>
-    <string id="CIQ_BottomSubtitleData_RideTime">Ride time</string>
-    <string id="CIQ_BottomSubtitleData_Distance">Distance</string>
-    
-    <string id="CIQ_StartButtonAction">Action on START button press / screen tap</string>
-    <string id="CIQ_StartButtonAction_HornTrigger">Horn trigger</string>
-    <string id="CIQ_StartButtonAction_FrontLightToggle">Front light toggle</string>
-
-
 
 
     <!-- FIT Strings-->
@@ -114,6 +99,5 @@
     <string id="avgPower_units">W</string>
     <string id="runningTime_label">Session running time (debug)</string>
     <string id="runnintTime_units">s</string>
-
 
 </strings>

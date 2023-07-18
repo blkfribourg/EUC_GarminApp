@@ -52,7 +52,7 @@ class GarminEUCView extends WatchUi.View {
     cDrawables[:TemperatureNumber].setText(
       valueRound(eucData.temperature, "%.1f").toString() + "°C"
     );
-
+    cDrawables[:BottomSubtitle].setText(diplayStats());
     /* To implement later
             switch (AppStorage.getSetting("BottomSubtitleData")) {
                 case 0: cDrawables[:BottomSubtitle].setText(WheelData.wheelModel); break;
@@ -87,6 +87,22 @@ class GarminEUCView extends WatchUi.View {
     var rounded;
     rounded = Math.round(value * 100) / 100;
     return rounded.format(format);
+  }
+  function diplayStats() {
+    var rideStatText = "";
+    rideStats.statTimer = rideStats.statTimer - 1;
+    if (rideStats.statTimer > 0) {
+      rideStatText =
+        "Avg Spd: " + valueRound(eucData.avgMovingSpeed, "%.1f").toString();
+    }
+    if (rideStats.statTimer < 0 && rideStats.statTimer > -20) {
+      rideStatText =
+        "Top Spd:" + valueRound(eucData.topSpeed, "%.1f").toString();
+    }
+    if (rideStats.statTimer < -20) {
+      rideStats.statTimer = 20;
+    }
+    return rideStatText;
   }
 
   // Called when this View is removed from the screen. Save the
