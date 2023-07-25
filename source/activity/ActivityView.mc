@@ -346,6 +346,7 @@ class ActivityRecordView extends WatchUi.View {
   private var maxPower;
   private var maxTemp;
   private var currentPWM;
+  private var correctedSpeed;
   private var currentCurrent;
   private var sumCurrent;
   private var callNb;
@@ -356,11 +357,14 @@ class ActivityRecordView extends WatchUi.View {
   function updateFitData() {
     callNb++;
 
-    currentPWM = eucData.getCalculatedtPWM();
+    currentPWM = eucData.calculatedPWM;
+    correctedSpeed = eucData.correctedSpeed;
     currentCurrent = (currentPWM / 100) * eucData.Phcurrent;
     currentPower = currentCurrent * eucData.voltage * eucData.voltage_scaling;
-    SessionDistance = eucData.tripDistance - startingEUCTripDistance;
-    mSpeedField.setData(eucData.speed); // id 0
+    SessionDistance =
+      (eucData.tripDistance - startingEUCTripDistance) *
+      eucData.speedCorrectionFactor;
+    mSpeedField.setData(correctedSpeed); // id 0
     mPWMField.setData(currentPWM); //id 1
     mVoltageField.setData(eucData.voltage * eucData.voltage_scaling); // id 2
     mCurrentField.setData(currentCurrent); // id 3
@@ -368,8 +372,8 @@ class ActivityRecordView extends WatchUi.View {
     mTempField.setData(eucData.temperature); // id 5
     mTripDistField.setData(SessionDistance); // id 6
 
-    if (eucData.speed > maxSpeed) {
-      maxSpeed = eucData.speed;
+    if (correctedSpeed > maxSpeed) {
+      maxSpeed = correctedSpeed;
       mMaxSpeedField.setData(maxSpeed); // id 7
     }
     if (currentPWM > maxPWM) {

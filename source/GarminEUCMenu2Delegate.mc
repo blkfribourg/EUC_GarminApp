@@ -74,7 +74,7 @@ class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
 
   function updateSublabels() {
     var menuToUpdate = parent_menu;
-    System.println("call update labels");
+    //System.println("call update labels");
     var valuesToUpdate = [
       eucData.dictLedMode.keys()[
         eucData.dictLedMode.values().indexOf(eucData.ledMode.toString())

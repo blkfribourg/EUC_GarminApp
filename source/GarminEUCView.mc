@@ -1,7 +1,7 @@
 import Toybox.Graphics;
 import Toybox.WatchUi;
 using Toybox.Timer;
-using Toybox.Math;
+
 using Toybox.System;
 class GarminEUCView extends WatchUi.View {
   private var cDrawables = {};
@@ -63,11 +63,11 @@ class GarminEUCView extends WatchUi.View {
             }
         */
     cDrawables[:SpeedNumber].setText(
-      valueRound(eucData.speed, "%.1f").toString()
+      valueRound(eucData.getCorrectedSpeed(), "%.1f").toString()
     );
 
     //cDrawables[:SpeedArc].setValues(WheelData.currentSpeed.toFloat(), WheelData.speedLimit);
-    cDrawables[:SpeedArc].setValues(eucData.getCalculatedtPWM().toFloat(), 100);
+    cDrawables[:SpeedArc].setValues(eucData.calculatedPWM.toFloat(), 100);
     cDrawables[:BatteryArc].setValues(batteryPercentage, 100);
     cDrawables[:TemperatureArc].setValues(
       eucData.temperature,
@@ -83,26 +83,27 @@ class GarminEUCView extends WatchUi.View {
     // Call the parent onUpdate function to redraw the layout
     View.onUpdate(dc);
   }
-  function valueRound(value, format) {
-    var rounded;
-    rounded = Math.round(value * 100) / 100;
-    return rounded.format(format);
-  }
+
   function diplayStats() {
-    var rideStatText = "";
-    rideStats.statTimer = rideStats.statTimer - 1;
-    if (rideStats.statTimer > 0) {
-      rideStatText =
-        "Avg Spd: " + valueRound(eucData.avgMovingSpeed, "%.1f").toString();
+    var rideStatsText = "";
+
+    if (rideStats.statsArray != null && rideStats.statsNumberToDiplay != 0) {
+      rideStatsText = rideStats.statsArray[rideStats.statsIndexToDiplay];
+      rideStats.statsTimer--;
+      if (rideStats.statsTimer < 0) {
+        rideStats.statsIndexToDiplay++;
+        rideStats.statsTimerReset();
+        if (rideStats.statsIndexToDiplay > rideStats.statsNumberToDiplay - 1) {
+          rideStats.statsIndexToDiplay = 0;
+        }
+      }
     }
-    if (rideStats.statTimer < 0 && rideStats.statTimer > -20) {
-      rideStatText =
-        "Top Spd:" + valueRound(eucData.topSpeed, "%.1f").toString();
+    //Sanity check, may return null during app initialization
+    if (rideStatsText != null) {
+      return rideStatsText;
+    } else {
+      return "";
     }
-    if (rideStats.statTimer < -20) {
-      rideStats.statTimer = 20;
-    }
-    return rideStatText;
   }
 
   // Called when this View is removed from the screen. Save the

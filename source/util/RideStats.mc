@@ -1,26 +1,53 @@
 import Toybox.Lang;
 import Toybox.System;
 module rideStats {
+  var showAverageMovingSpeedStatistic;
+  var showTopSpeedStatistic;
+  var showWatchBatteryConsumptionStatistic;
+  var statsNumberToDiplay = 0;
+  var statsIndexToDiplay = 0;
+  var statsArray;
+
   var minimalMovingSpeed = 3.0; // 3 kmh
   var distanceSinceStartup;
   var startupDistance as Float?;
   var movingmsec = 0.0;
-  var statTimer = 20;
+  var runningmsec = 0.0;
+  var statsTimer;
+  var consummedWatchBattery = 0.0;
+  var startupWatchBattery;
 
   function avgSpeed() {
-    if (eucData.speed > minimalMovingSpeed) {
+    if (eucData.correctedSpeed > minimalMovingSpeed) {
       if (startupDistance == null) {
         startupDistance = eucData.tripDistance;
       }
-      movingmsec = movingmsec + 100;
+      movingmsec = movingmsec + eucData.updateDelay;
       eucData.avgMovingSpeed =
-        (eucData.tripDistance - startupDistance) / (movingmsec / 3600000.0);
+        ((eucData.tripDistance - startupDistance) *
+          eucData.speedCorrectionFactor) /
+        (movingmsec / 3600000.0);
     }
   }
 
   function topSpeed() {
-    if (eucData.speed > eucData.topSpeed) {
-      eucData.topSpeed = eucData.speed;
+    if (eucData.correctedSpeed > eucData.topSpeed) {
+      eucData.topSpeed = eucData.correctedSpeed;
     }
+  }
+
+  function watchBatteryUsage() {
+    runningmsec = runningmsec + eucData.updateDelay;
+    if (startupWatchBattery == null) {
+      startupWatchBattery = System.getSystemStats().battery;
+    }
+    consummedWatchBattery =
+      startupWatchBattery - System.getSystemStats().battery;
+    eucData.watchBatteryUsage =
+      consummedWatchBattery / (runningmsec / 3600000.0);
+  }
+
+  function statsTimerReset() {
+    statsTimer = 2000.0 / eucData.updateDelay;
   }
 }

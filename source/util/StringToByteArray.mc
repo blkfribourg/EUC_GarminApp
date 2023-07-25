@@ -1,5 +1,6 @@
 import Toybox.Lang;
 using Toybox.StringUtil;
+using Toybox.Math;
 function string_to_byte_array(plain_text) {
   var options = {
     :fromRepresentation => StringUtil.REPRESENTATION_STRING_PLAIN_TEXT,
@@ -12,4 +13,10 @@ function string_to_byte_array(plain_text) {
   //System.println(Lang.format("           '$1$'..", [ result ]));
 
   return result;
+}
+
+function valueRound(value, format) {
+  var rounded;
+  rounded = Math.round(value * 100) / 100;
+  return rounded.format(format);
 }

@@ -3,14 +3,14 @@ using Toybox.BluetoothLowEnergy as Ble;
 using Toybox.WatchUi as Ui;
 import Toybox.Lang;
 
-class eucBLEDelegate extends Ble.BleDelegate {
+// Non fontionnal code, WIP //
+class eucBLEDelegateVeteran extends Ble.BleDelegate {
   var profileManager = null;
   var device = null;
   var settings = 0x0000;
   var service = null;
   var char = null;
   var queue;
-  var paired = false;
 
   function initialize(pm, q) {
     //Sys.println("initializeBle");
@@ -32,15 +32,12 @@ class eucBLEDelegate extends Ble.BleDelegate {
       if (service != null && char != null) {
         var cccd = char.getDescriptor(Ble.cccdUuid());
         cccd.requestWrite([0x01, 0x00]b);
-        paired = true;
       } else {
         Ble.unpairDevice(device);
-        paired = false;
       }
     } else {
       Ble.unpairDevice(device);
       Ble.setScanState(Ble.SCAN_STATE_SCANNING);
-      paired = false;
     }
   }
   //! @param scanResults An iterator of new scan results
@@ -115,56 +112,67 @@ class eucBLEDelegate extends Ble.BleDelegate {
   function frameBuffer(transmittedFrame) {
     for (var i = 0; i < transmittedFrame.size(); i++) {
       if (checkChar(transmittedFrame[i]) == true) {
-        // process frame and guess type
-        if (frame[18].toNumber() == 0) {
-          // Frame A
-          //System.println("Frame A detected");
-          processFrameA(frame);
-        } else if (frame[18].toNumber() == 4) {
-          // Frame B
-          //System.println("Frame B detected");
-          processFrameB(frame);
-        }
+        processFrame(frame);
       }
     }
   }
 
   // adapted from wheellog
-  var oldc;
+  var old1 = 0;
+  var old2 = 0;
+  var len = 0;
+
   var frame as ByteArray?;
   var state = "unknown";
   function checkChar(c) {
     if (state.equals("collecting")) {
-      frame.add(c);
-      oldc = c;
-
       var size = frame.size();
 
       if (
-        (size == 20 && c.toNumber() != 24) ||
-        (size > 20 && size <= 24 && c.toNumber() != 90)
+        ((size == 22 || size == 30) && c.toNumber() != 0) ||
+        (size == 23 && (c & 0xfe).toNumber != 0) ||
+        (size == 31 && (c & 0xfc).toNumber() != 0)
       ) {
-        state = "unknown";
+        state = "done";
+        reset();
         return false;
       }
-
-      if (size == 24) {
+      frame.add(c);
+      if (size == len + 3) {
         state = "done";
+        reset();
         return true;
       }
+      // break;
+    }
+    if (state.equals("lensearch")) {
+      frame.add(c);
+      len = c & 0xff;
+      state = "collecting";
+      old2 = old1;
+      old1 = c;
+      //break;
     } else {
-      if (oldc != null && oldc.toNumber() == 85 && c.toNumber() == 170) {
-        // beguining of a frame
+      if (c.toNumber() == 92 && old1.toNumber() == 90 && old2 == 220) {
         frame = new [0]b;
-        frame.add(85);
-        frame.add(170);
-        state = "collecting";
+        frame.add(92);
+        frame.add(90);
+        frame.add(220);
+        state = "lensearch";
+      } else if (c.toNumber() == 90 && old1 == 220) {
+        old2 = old1;
+      } else {
+        old2 = 0;
       }
-      oldc = c;
+      old1 = c;
     }
     return false;
   }
-
+  function reset() {
+    old1 = 0;
+    old2 = 0;
+    state = "unknown";
+  }
   function processFrameB(value) {
     eucData.totalDistance =
       value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
@@ -187,23 +195,16 @@ class eucBLEDelegate extends Ble.BleDelegate {
     //eucData.lightMode=value[19]&0x03; unable to get light mode from wheel
     //System.println("light mode (frameA ):"+eucData.lightMode);
   }
-  function processFrameA(value) {
+  function processFrame(value) {
+    eucData.voltage = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+      :offset => 4,
+      :endianness => Lang.ENDIAN_BIG,
+    });
     eucData.speed =
-      (value
-        .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-          :offset => 4,
-          :endianness => Lang.ENDIAN_BIG,
-        })
-        .abs() *
-        3.6) /
-      100;
-    eucData.voltage =
-      value
-        .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-          :offset => 2,
-          :endianness => Lang.ENDIAN_BIG,
-        })
-        .abs() / 100.0;
+      value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+        :offset => 6,
+        :endianness => Lang.ENDIAN_BIG,
+      }) * 10;
     eucData.tripDistance =
       value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
         :offset => 6,

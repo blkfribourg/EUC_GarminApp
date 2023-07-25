@@ -40,7 +40,6 @@ class GarminEUCDelegate extends WatchUi.BehaviorDelegate {
 
   function onKey(keyEvent as WatchUi.KeyEvent) {
     if (keyEvent.getKey().equals(WatchUi.KEY_ENTER)) {
-      System.print("OK");
       ActionButton.triggerAction(eucBleDelegate);
     }
     if (keyEvent.getKey().equals(WatchUi.KEY_ESC)) {
@@ -48,5 +47,9 @@ class GarminEUCDelegate extends WatchUi.BehaviorDelegate {
     }
 
     return true;
+  }
+
+  function getActivityView() {
+    return activityView;
   }
 }

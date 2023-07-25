@@ -6,11 +6,16 @@ module eucData {
   var rotationSpeed; // cutoff speed when freespin test performed
   var powerFactor; // 0.9 for better safety
   var rotationVoltage; // voltage when freespin test performed
+  var updateDelay;
+  var alarmThreshold_PWN;
+  var alarmThreshold_speed;
   var actionButton;
-
+  var speedCorrectionFactor; // correct distance aswell ...
+  var calculatedPWM = 0.0;
   var deviceName = null;
   var voltage_scaling;
   var speed = 0.0;
+  var correctedSpeed = 0.0;
   var voltage = 0;
   var lowestBatteryPercentage = 101;
   var tripDistance = 0.0;
@@ -26,6 +31,7 @@ module eucData {
   var ledMode = "0";
   var avgMovingSpeed = 0.0;
   var topSpeed = 0.0;
+  var watchBatteryUsage = 0.0;
   //var volume="1";
   //var lightMode="0";
 
@@ -114,18 +120,25 @@ module eucData {
     return battery;
   }
   function setSettings(
+    _updateDelay,
     _rotationSpeed,
     _rotationVoltage,
     _powerFactor,
     _voltageFactor,
-    _actionButton
-
+    _speedCorrectionFactor,
+    _actionButton,
+    _alarmThreshold_PWN,
+    _alarmThreshold_speed
   ) {
+    updateDelay = _updateDelay;
     rotationSpeed = _rotationSpeed;
     rotationVoltage = _rotationVoltage;
     powerFactor = _powerFactor;
     voltage_scaling = _voltageFactor;
-    actionButton= _actionButton;
+    speedCorrectionFactor = _speedCorrectionFactor;
+    actionButton = _actionButton;
+    alarmThreshold_PWN = _alarmThreshold_PWN;
+    alarmThreshold_speed = _alarmThreshold_speed;
   }
   function getCalculatedtPWM() {
     if (eucData.voltage != 0) {
@@ -139,5 +152,8 @@ module eucData {
     } else {
       return 0;
     }
+  }
+  function getCorrectedSpeed() {
+    return speed * speedCorrectionFactor.toFloat();
   }
 }
