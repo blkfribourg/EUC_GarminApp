@@ -2,18 +2,22 @@ using Toybox.BluetoothLowEnergy as Ble;
 using Toybox.System as Sys;
 
 class eucPM {
-  var EUC_SERVICE = Ble.longToUuid(0x0000ffe000001000l, 0x800000805f9b34fbl); // Begode Tesla V2 :)
-  var EUC_CHAR = Ble.longToUuid(0x0000ffe100001000l, 0x800000805f9b34fbl);
+  var EUC_SERVICE;
+  var EUC_CHAR;
 
-  private var eucProfileDef = {
-    :uuid => EUC_SERVICE,
-    :characteristics => [
-      {
-        :uuid => EUC_CHAR,
-        :descriptors => [Ble.cccdUuid()],
-      },
-    ],
-  };
+  private var eucProfileDef;
+
+  function init() {
+    eucProfileDef = {
+      :uuid => EUC_SERVICE,
+      :characteristics => [
+        {
+          :uuid => EUC_CHAR,
+          :descriptors => [Ble.cccdUuid()],
+        },
+      ],
+    };
+  }
 
   function registerProfiles() {
     try {
@@ -21,5 +25,16 @@ class eucPM {
     } catch (e) {
       System.println("e=" + e.getErrorMessage());
     }
+  }
+
+  function setGotwayOrLeaperkim() {
+    EUC_SERVICE = Ble.longToUuid(0x0000ffe000001000l, 0x800000805f9b34fbl);
+    EUC_CHAR = Ble.longToUuid(0x0000ffe100001000l, 0x800000805f9b34fbl);
+    self.init();
+  }
+  function setKingsong() {
+    EUC_SERVICE = Ble.longToUuid(0x0000ffe000001000l, 0x800000805f9b34fbl);
+    EUC_CHAR = Ble.longToUuid(0x0000ffe100001000l, 0x800000805f9b34fbl);
+    self.init();
   }
 }

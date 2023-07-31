@@ -8,6 +8,7 @@ class GarminEUCApp extends Application.AppBase {
   private var delegate;
   private var eucBleDelegate;
   private var queue;
+  private var EUCSettingsDict;
   // private var updateDelay = 100;
   private var alarmsTimer;
   private var menu;
@@ -34,12 +35,11 @@ class GarminEUCApp extends Application.AppBase {
       AppStorage.getSetting("alarmThreshold_PWM"),
       AppStorage.getSetting("alarmThreshold_speed")
     );
+    eucData.wheelBrand = AppStorage.getSetting("wheelBrand");
     rideStatsInit();
-
     activityAutorecording = AppStorage.getSetting("activityRecordingOnStartup");
     activityAutosave = AppStorage.getSetting("activitySavingOnExit");
 
-    menu = new Rez.Menus.MainMenu();
     alarmsTimer.start(method(:onUpdateTimer), eucData.updateDelay, true);
   }
 
@@ -64,17 +64,25 @@ class GarminEUCApp extends Application.AppBase {
     var profileManager = new eucPM();
 
     if (Toybox has :BluetoothLowEnergy) {
-      eucBleDelegate = new eucBLEDelegate(profileManager, queue);
+      // depending on EUC brand :
+      profileManager.setGotwayOrLeaperkim();
+      eucBleDelegate = new eucBLEDelegate(
+        profileManager,
+        queue,
+        frameDecoder.init()
+      );
       BluetoothLowEnergy.setDelegate(eucBleDelegate);
       profileManager.registerProfiles();
     }
     view = new GarminEUCView();
-
-    menu2Delegate = new GarminEUCMenu2Delegate(
+    EUCSettingsDict = getEUCSettingsDict(); // in helper function
+    menu = createSettingsMenu(EUCSettingsDict.getConfigLabels(), "Settings");
+    menu2Delegate = new GarminEUCMenu2Delegate_generic(
       menu,
       eucBleDelegate,
       queue,
-      view
+      view,
+      EUCSettingsDict
     );
 
     delegate = new GarminEUCDelegate(

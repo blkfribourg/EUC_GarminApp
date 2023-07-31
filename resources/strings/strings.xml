@@ -38,6 +38,11 @@
 
     <!-- Strings, that are used in Connect IQ Settings menu, like 
         one you see in Garmin Express or Garmin Connect Mobile -->
+    <string id="wheelBrand">Wheel brand</string>
+    <string id="wheelBrand0">Gotway/Begode</string>
+    <string id="wheelBrand1">Leaperkim</string>
+    <string id="wheelBrand2">Kingsong</string>
+
     <string id="actionButton">Action when OK button pressed</string>
     <string id="buttonActionNone">None</string>
     <string id="buttonActionLights">Cycle lights modes</string>

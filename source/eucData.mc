@@ -1,12 +1,13 @@
 using Toybox.System;
 
 module eucData {
+  var wheelBrand;
   // Calculated PWM variables :
   // PLEASE UPDATE WITH YOU OWN VALUES BEFORE USE !
   var rotationSpeed; // cutoff speed when freespin test performed
   var powerFactor; // 0.9 for better safety
   var rotationVoltage; // voltage when freespin test performed
-  var updateDelay;
+  var updateDelay; // UI refresh every updateDelay
   var alarmThreshold_PWN;
   var alarmThreshold_speed;
   var actionButton;
@@ -32,91 +33,53 @@ module eucData {
   var avgMovingSpeed = 0.0;
   var topSpeed = 0.0;
   var watchBatteryUsage = 0.0;
-  //var volume="1";
-  //var lightMode="0";
+  var hPWM;
 
-  // dict for status report
-
-  // no lights & volume "feedback" on tesla v2
-  /*
-        var dictLightStatus ={
-            "On" => "0",
-            "Off" => "1",
-            "Flashing" => "2"
-        };
-        */
-  var dictPedalStatus = {
-    "Hard" => "2",
-    "Medium" => "1",
-    "Soft" => "0",
-  };
-  var dictAlarmStatus = {
-    "PWM only" => "2",
-    "35Kmh + PWM" => "1",
-    "30Kmh + PWM" => "0",
-  };
-  /* No angle status feedback
-        var dictCutoffAngleStatus={
-            "High" => "2",
-            "Medium" => "1",
-            "Low" => "0"
-        };
-*/
-
-  //dict for communication
-  var dictLightsMode = {
-    "On" => "Q",
-    "Off" => "E",
-    "Flashing" => "T",
-  };
-  var dictPedalMode = {
-    "Hard" => "h",
-    "Medium" => "f",
-    "Soft" => "s",
-  };
-  var dictAlarmMode = {
-    "PWM only" => "i",
-    "35Kmh + PWM" => "u",
-    "30Kmh + PWM" => "o",
-  };
-  var dictCutoffAngleMode = {
-    "High" => "<",
-    "Medium" => "=",
-    "Low" => ">",
-  };
-
-  // dict for communication & status report
-  var dictLedMode = {
-    "0" => "0",
-    "1" => "1",
-    "2" => "2",
-    "3" => "3",
-    "4" => "4",
-  };
-  var dictVolume = {
-    "1" => "1",
-    "2" => "2",
-    "3" => "3",
-    "4" => "4",
-    "5" => "5",
-    "6" => "6",
-    "7" => "7",
-    "8" => "8",
-    "9" => "9",
-  };
+  // Veteran specific
+  var version;
 
   function getBatteryPercentage() {
+    // using better battery formula from wheellog
     var battery = 0;
-    // using better battery formula from wheellog :
-    if (voltage > 66.8) {
-      battery = 100.0;
-    } else if (voltage > 54.4) {
-      battery = (voltage - 53.8) / 0.13;
-    } else if (voltage > 52.9) {
-      battery = (voltage - 52.9) / 0.325;
-    } else {
-      battery = 0.0;
+    // GOTWAY ---------------------------------------------------
+    if (wheelBrand.equals("Gotway")) {
+      if (voltage > 66.8) {
+        battery = 100.0;
+      } else if (voltage > 54.4) {
+        battery = (voltage - 53.8) / 0.13;
+      } else if (voltage > 52.9) {
+        battery = (voltage - 52.9) / 0.325;
+      } else {
+        battery = 0.0;
+      }
     }
+    // ----------------------------------------------------------
+    // LEAPERKIM ------------------------------------------------
+    if (wheelBrand.equals("Leaperkim")) {
+      if (version < 4) {
+        // not Patton
+        if (voltage > 10020) {
+          battery = 100;
+        } else if (voltage > 8160) {
+          battery = (voltage - 8070) / 19.5;
+        } else if (voltage > 7935) {
+          battery = (voltage - 7935) / 48.75;
+        } else {
+          battery = 0;
+        }
+      } else {
+        if (voltage > 12525) {
+          battery = 100;
+        } else if (voltage > 10200) {
+          battery = (voltage - 9975) / 25.5;
+        } else if (voltage > 9600) {
+          battery = (voltage - 9600) / 67.5;
+        } else {
+          battery = 0;
+        }
+      }
+    }
+    // ----------------------------------------------------------
     return battery;
   }
   function setSettings(

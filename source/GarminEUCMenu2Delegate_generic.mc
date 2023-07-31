@@ -4,7 +4,7 @@ import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Timer;
 
-class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
+class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
   private var eucBleDelegate = null;
   private var queue = null;
   private var parent_menu = null;
@@ -14,9 +14,24 @@ class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
   private var subLabelsRefreshDuration = 2000 / eucData.updateDelay; // ~2 sec
   var main_view;
   var EUCSettingsDict;
+  var EUCConfig;
+  var EUCStatus;
+  var EUCStatusLabels;
+  var EUCConfigLabels;
 
-  function initialize(current_menu, current_eucBleDelegate, q, m_view) {
-    EUCSettingsDict = getEUCSettingsDict(); // in helper function
+  function initialize(
+    current_menu,
+    current_eucBleDelegate,
+    q,
+    m_view,
+    _EUCSettingsDict
+  ) {
+    EUCSettingsDict = _EUCSettingsDict;
+    EUCStatus = EUCSettingsDict.getConfigWithStatusDict();
+    EUCStatusLabels = EUCSettingsDict.getConfigWithStatusLabels();
+    EUCConfig = EUCSettingsDict.getConfig();
+    EUCConfigLabels = EUCSettingsDict.getConfigLabels();
+
     parent_menu = current_menu;
     eucBleDelegate = current_eucBleDelegate;
     queue = q;
@@ -30,26 +45,15 @@ class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
     WatchUi.popView(WatchUi.SLIDE_DOWN);
   }
   function onSelect(item) {
+    for (var i = 0; i < EUCConfig.size(); i++) {
+      System.println("label :" + item.getLabel().toString());
+      System.println("item " + i + " : " + EUCConfigLabels[i]);
+      if (item.getLabel().toString().equals(EUCConfigLabels[i])) {
+        System.println("Enter " + EUCConfigLabels[i]);
+        nestedMenu(EUCConfigLabels[i], EUCConfig[i]);
+      }
+    }
     //System.println(item.getId().toString());
-    if (item.getId() == :lightsModeMenu) {
-      nestedMenu("Lights", EUCSettingsDict.dictLightsMode);
-    }
-
-    if (item.getId() == :pedalModeMenu) {
-      nestedMenu("Pedal Mode", EUCSettingsDict.dictPedalMode);
-    }
-    if (item.getId() == :alarmModeMenu) {
-      nestedMenu("Speed Alarm", EUCSettingsDict.dictAlarmMode);
-    }
-    if (item.getId() == :cutoffAngleMenu) {
-      nestedMenu("Cutoff Angle", EUCSettingsDict.dictCutoffAngleMode);
-    }
-    if (item.getId() == :ledModeMenu) {
-      nestedMenu("Leds Mode", EUCSettingsDict.dictLedMode);
-    }
-    if (item.getId() == :volumeMenu) {
-      nestedMenu("Beep Volume", EUCSettingsDict.dictVolume);
-    }
   }
 
   function nestedMenu(title, paramsdict) {
@@ -76,34 +80,30 @@ class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
   }
 
   function updateSublabels() {
-    if (EUCSettingsDict == null) {
-      System.println("null settings dicts");
+    if (EUCStatus == null) {
+      System.println("null status dicts");
       return;
     }
     var menuToUpdate = parent_menu;
     //System.println("call update labels");
-    var valuesToUpdate = [
-      EUCSettingsDict.dictLedMode.keys()[
-        EUCSettingsDict.dictLedMode
-          .values()
-          .indexOf(EUCSettingsDict.ledMode.toString())
-      ],
-      EUCSettingsDict.dictAlarmStatus.keys()[
-        EUCSettingsDict.dictAlarmStatus
-          .values()
-          .indexOf(eucData.speedAlertMode.toString())
-      ],
-      EUCSettingsDict.dictPedalStatus.keys()[
-        EUCSettingsDict.dictPedalStatus
-          .values()
-          .indexOf(eucData.pedalMode.toString())
-      ],
-    ];
-
     if (menuToUpdate != null) {
-      for (var i = 0; i < valuesToUpdate.size(); i++) {
-        menuToUpdate.getItem(i + 1).setSubLabel(valuesToUpdate[i].toString()); // i+1 -> skipping first item (lights as no feedback on tesla)
-        //System.println(valuesToUpdate[i].toString());
+      for (var i = 0; i < EUCConfigLabels.size(); i++) {
+        for (var j = 0; j < EUCStatusLabels.size(); j++) {
+          if (menuToUpdate.getItem(i).getLabel().equals(EUCStatusLabels[j])) {
+            // System.println("Update item: " + i);
+            menuToUpdate
+              .getItem(i)
+              .setSubLabel(
+                EUCStatus[j].keys()[
+                  EUCStatus[j]
+                    .values()
+                    .indexOf(EUCSettingsDict.getWheelSettingsStatus()[j])
+                ]
+              );
+          }
+          // i+1 -> skipping first item (lights as no feedback on tesla)
+          //System.println(valuesToUpdate[i].toString());
+        }
       }
     }
     subLabelsRefreshDuration--;
@@ -114,26 +114,11 @@ class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
   }
   function uniqueCheck(parentMenuTitle, item) {
     //System.println(parentMenuTitle);
-    if (parentMenuTitle.equals("Lights")) {
-      uncheckExeptItem(item, EUCSettingsDict.dictLightsMode);
+    for (var i = 0; i < EUCConfig.size(); i++) {
+      if (parentMenuTitle.equals(EUCConfigLabels[i])) {
+        uncheckExeptItem(item, EUCConfig[i]);
+      }
     }
-
-    if (parentMenuTitle.equals("Pedal Mode")) {
-      uncheckExeptItem(item, EUCSettingsDict.dictPedalMode);
-    }
-    if (parentMenuTitle.equals("Speed Alarm")) {
-      uncheckExeptItem(item, EUCSettingsDict.dictAlarmMode);
-    }
-    if (parentMenuTitle.equals("Cutoff Angle")) {
-      uncheckExeptItem(item, EUCSettingsDict.dictCutoffAngleMode);
-    }
-    if (parentMenuTitle.equals("Leds Mode")) {
-      uncheckExeptItem(item, EUCSettingsDict.dictLedMode);
-    }
-    if (parentMenuTitle.equals("Beep Volume")) {
-      uncheckExeptItem(item, EUCSettingsDict.dictVolume);
-    }
-    //System.println(item.getId());
   }
   function uncheckExeptItem(item, paramsdict) {
     for (var i = 0; i < paramsdict.size(); i++) {
@@ -144,24 +129,10 @@ class GarminEUCMenu2Delegate extends WatchUi.Menu2InputDelegate {
     }
   }
   function execute(parentMenuTitle) {
-    if (parentMenuTitle.equals("Lights")) {
-      findChecked(parentMenuTitle, EUCSettingsDict.dictLightsMode);
-    }
-
-    if (parentMenuTitle.equals("Pedal Mode")) {
-      findChecked(parentMenuTitle, EUCSettingsDict.dictPedalMode);
-    }
-    if (parentMenuTitle.equals("Speed Alarm")) {
-      findChecked(parentMenuTitle, EUCSettingsDict.dictAlarmMode);
-    }
-    if (parentMenuTitle.equals("Cutoff Angle")) {
-      findChecked(parentMenuTitle, EUCSettingsDict.dictCutoffAngleMode);
-    }
-    if (parentMenuTitle.equals("Leds Mode")) {
-      findChecked(parentMenuTitle, EUCSettingsDict.dictLedMode);
-    }
-    if (parentMenuTitle.equals("Beep Volume")) {
-      findChecked(parentMenuTitle, EUCSettingsDict.dictVolume);
+    for (var i = 0; i < EUCConfig.size(); i++) {
+      if (parentMenuTitle.equals(EUCConfigLabels[i])) {
+        findChecked(parentMenuTitle, EUCConfig[i]);
+      }
     }
   }
 
