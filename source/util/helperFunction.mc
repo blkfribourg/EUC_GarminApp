@@ -26,7 +26,7 @@ function getEUCSettingsDict() {
     return new gotwayConfig();
   }
   if (eucData.wheelBrand == 1) {
-    return null;
+    return new veteranConfig();
   }
   if (eucData.wheelBrand == 2) {
     return null;

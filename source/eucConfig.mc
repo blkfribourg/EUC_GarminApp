@@ -101,3 +101,41 @@ class gotwayConfig {
     "30Kmh + PWM" => "0",
   };
 }
+
+class veteranConfig {
+  function getWheelSettingsStatus() {
+    return [eucData.pedalMode.toString()];
+  }
+  function getConfigWithStatusDict() {
+    return [dictPedalStatus];
+  }
+  function getConfigWithStatusLabels() {
+    return ["Pedal Mode"];
+  }
+  function getConfig() {
+    return [dictLightsMode, dictPedalMode, dictResetTrip];
+  }
+  function getConfigLabels() {
+    return ["Lights", "Pedal Mode", "Reset trip"];
+  }
+
+  //dict for communication
+  var dictLightsMode = {
+    "On" => "SetLightON",
+    "Off" => "SetLightOFF",
+  };
+  var dictPedalMode = {
+    "Hard" => "SETh",
+    "Medium" => "SETm",
+    "Soft" => "SETs",
+  };
+  var dictResetTrip = {
+    "Yes" => "CLEARMETER",
+    "No" => "",
+  };
+  var dictPedalStatus = {
+    "Hard" => "0",
+    "Medium" => "1",
+    "Soft" => "2",
+  };
+}

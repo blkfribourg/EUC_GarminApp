@@ -5,7 +5,7 @@ module frameDecoder {
       return new GwDecoder();
     }
     if (eucData.wheelBrand.equals("1")) {
-      return new LeaperkimDecoder();
+      return new VeteranDecoder();
     }
     if (eucData.wheelBrand.equals("2")) {
       return new KingsongDecoder();
@@ -173,7 +173,7 @@ class GwDecoder {
 */
 }
 
-class LeaperkimDecoder {
+class VeteranDecoder {
   function frameBuffer(transmittedFrame) {
     for (var i = 0; i < transmittedFrame.size(); i++) {
       if (checkChar(transmittedFrame[i]) == true) {

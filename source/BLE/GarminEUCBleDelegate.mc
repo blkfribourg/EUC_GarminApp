@@ -75,7 +75,7 @@ class eucBLEDelegate extends Ble.BleDelegate {
   function sendCmd(cmd) {
     //Sys.println("enter sending command " + cmd);
 
-    if (service != null && char != null) {
+    if (service != null && char != null && cmd != "") {
       var enc_cmd = string_to_byte_array(cmd as String);
       //Sys.println("sending command " +enc_cmd.toString());
       char.requestWrite(enc_cmd, { :writeType => Ble.WRITE_TYPE_DEFAULT });

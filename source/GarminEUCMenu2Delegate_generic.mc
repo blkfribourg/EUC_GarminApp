@@ -46,10 +46,10 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
   }
   function onSelect(item) {
     for (var i = 0; i < EUCConfig.size(); i++) {
-      System.println("label :" + item.getLabel().toString());
-      System.println("item " + i + " : " + EUCConfigLabels[i]);
+      //System.println("label :" + item.getLabel().toString());
+      // System.println("item " + i + " : " + EUCConfigLabels[i]);
       if (item.getLabel().toString().equals(EUCConfigLabels[i])) {
-        System.println("Enter " + EUCConfigLabels[i]);
+        // System.println("Enter " + EUCConfigLabels[i]);
         nestedMenu(EUCConfigLabels[i], EUCConfig[i]);
       }
     }
@@ -81,7 +81,7 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
 
   function updateSublabels() {
     if (EUCStatus == null) {
-      System.println("null status dicts");
+      // System.println("null status dicts");
       return;
     }
     var menuToUpdate = parent_menu;
@@ -147,7 +147,7 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
   function sendCommand(fromMenu, cmd) {
     var command = null;
     var enc_cmd = null;
-
+    // specific to begode/gotway : should add a gotway check --------------------
     if (fromMenu.equals("Leds Mode")) {
       command = "W";
       enc_cmd = string_to_byte_array(command as String);
@@ -191,7 +191,9 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
         [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
         eucBleDelegate.getPMService()
       );
-    } else {
+    }
+    // End of "gotway specific"
+    else {
       eucBleDelegate.sendCmd(cmd);
     }
     queue.delayTimer.start(method(:timerCallback), delay, true);
