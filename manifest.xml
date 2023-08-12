@@ -18,10 +18,13 @@
         -->
         <iq:products>
             <iq:product id="approachs7042mm"/>
+            <iq:product id="approachs7047mm"/>
             <iq:product id="d2air"/>
             <iq:product id="descentmk2"/>
             <iq:product id="descentmk2s"/>
             <iq:product id="enduro"/>
+            <iq:product id="epix2pro42mm"/>
+            <iq:product id="epix2pro51mm"/>
             <iq:product id="fenix5plus"/>
             <iq:product id="fenix5splus"/>
             <iq:product id="fenix5xplus"/>
@@ -41,6 +44,7 @@
             <iq:product id="fr945"/>
             <iq:product id="fr945lte"/>
             <iq:product id="fr955"/>
+            <iq:product id="fr965"/>
             <iq:product id="legacyherofirstavenger"/>
             <iq:product id="legacysagadarthvader"/>
             <iq:product id="marq2"/>
