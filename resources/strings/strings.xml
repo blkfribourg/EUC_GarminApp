@@ -40,7 +40,7 @@
         one you see in Garmin Express or Garmin Connect Mobile -->
     <string id="wheelBrand">Wheel brand</string>
     <string id="wheelBrand0">Gotway/Begode</string>
-    <string id="wheelBrand1">Leaperkim</string>
+    <string id="wheelBrand1">Veteran</string>
     <string id="wheelBrand2">Kingsong</string>
 
     <string id="actionButton">Action when OK button pressed</string>
@@ -98,7 +98,7 @@
    <string id="rideStats">Ride info displayed on the bottom</string>
    <string id="rideStatsDescription">Select the ride info to be displayed, if more than one selected, selected info will be diplayed in a loop every 2 sec </string>
 
-   <string id="averageMovingSpeedStatistic">Display average moving speed (when speed >3 km/h)</string>
+   <string id="averageMovingSpeedStatistic">Display average moving speed (when speed >3 km/h or 2 mph)</string>
    <string id="topSpeedStatistic">Display top speed</string>
    <string id="watchBatteryConsumptionStatistic">Display watch battery consumption (%/h)</string>
    
@@ -106,7 +106,8 @@
 
     <string id="speed_graph_label">Speed</string>
     <string id="speed_label">Speed</string>
-    <string id="speed_units">km/h</string>
+    <string id="speed_units_kmh">km/h</string>
+    <string id="speed_units_mph">mph</string>
     <string id="pwm_graph_label">PWM</string>
     <string id="pwm_label">PWM</string>
     <string id="pwm_units"></string>
@@ -123,9 +124,10 @@
     <string id="temperature_label">MB Temperature</string>
     <string id="temperature_units">°C</string>
     <string id="tripDistance_label">Trip distance</string>
-    <string id="tripDistance_units">km</string>
+    <string id="distanceUnits_km">km</string>
+    <string id="distanceUnits_miles">miles</string>
     <string id="maxSpeed_label">Session max speed</string>
-    <string id="maxSpeed_units">km/h</string>
+    
     <string id="maxPWM_label">Session max PWM</string>
     <string id="maxPWM_units">%</string>
     <string id="maxCurrent_label">Session max current</string>
@@ -135,7 +137,7 @@
     <string id="maxTemperature_label">Session max temperature</string>
     <string id="maxTemperature_units">°C</string>
     <string id="avgSpeed_label">Session average speed</string>
-    <string id="avgSpeed_units">km/h</string>
+    
     <string id="avgCurrent_label">Session average current</string>
     <string id="avgCurrent_units">A</string>
     <string id="avgPower_label">Session average power</string>

@@ -2,7 +2,11 @@
  <fitContributions>
         <fitField id="0" displayInChart="true" sortOrder = "0" precision="2"
         chartTitle="@Strings.speed_graph_label" dataLabel="@Strings.speed_label"
-        unitLabel="@Strings.speed_units" fillColor="#FF0000" />
+        unitLabel="@Strings.speed_units_kmh" fillColor="#FF0000" />
+
+        <fitField id="16" displayInChart="true" sortOrder = "0" precision="2"
+        chartTitle="@Strings.speed_graph_label" dataLabel="@Strings.speed_label"
+        unitLabel="@Strings.speed_units_mph" fillColor="#FF0000" />
 
         <fitField id="1" displayInChart="true" sortOrder = "1" precision="2"
         chartTitle="@Strings.pwm_graph_label" dataLabel="@Strings.pwm_label"
@@ -26,11 +30,19 @@
 
         <fitField id="6" displayInChart="false" displayInActivitySummary="true" sortOrder = "6" precision="2"
         dataLabel="@Strings.tripDistance_label"
-        unitLabel="@Strings.tripDistance_units"/>
+        unitLabel="@Strings.distanceUnits_km"/>
+        
+        <fitField id="17" displayInChart="false" displayInActivitySummary="true" sortOrder = "6" precision="2"
+        dataLabel="@Strings.tripDistance_label"
+        unitLabel="@Strings.distanceUnits_miles"/>
 
         <fitField id="7" displayInChart="false" displayInActivitySummary="true" sortOrder = "7" precision="2"
         dataLabel="@Strings.maxSpeed_label"
-        unitLabel="@Strings.maxSpeed_units"/>
+        unitLabel="@Strings.speed_units_kmh"/>
+
+        <fitField id="18" displayInChart="false" displayInActivitySummary="true" sortOrder = "7" precision="2"
+        dataLabel="@Strings.maxSpeed_label"
+        unitLabel="@Strings.speed_units_mph"/>
 
           <fitField id="8" displayInChart="false" displayInActivitySummary="true" sortOrder = "8" precision="2"
         dataLabel="@Strings.maxPWM_label"
@@ -50,7 +62,11 @@
 
          <fitField id="12" displayInChart="false" displayInActivitySummary="true" sortOrder = "12" precision="2"
         dataLabel="@Strings.avgSpeed_label"
-        unitLabel="@Strings.avgSpeed_units"/>
+        unitLabel="@Strings.speed_units_kmh"/>
+
+         <fitField id="19" displayInChart="false" displayInActivitySummary="true" sortOrder = "12" precision="2"
+        dataLabel="@Strings.avgSpeed_label"
+        unitLabel="@Strings.speed_units_mph"/>
 
         <fitField id="13" displayInChart="false" displayInActivitySummary="true" sortOrder = "13" precision="2"
         dataLabel="@Strings.avgCurrent_label"
@@ -63,6 +79,8 @@
         <fitField id="15" displayInChart="false" displayInActivitySummary="true" sortOrder = "15" precision="2"
         dataLabel="@Strings.runningTime_label"
         unitLabel="@Strings.runnintTime_units"/>
+
+       
 
 
     </fitContributions>
