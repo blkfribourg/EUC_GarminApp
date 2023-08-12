@@ -1,6 +1,6 @@
 <properties>
 
-    <property id="wheelBrand" type="number">0</property>
+    <property id="wheelBrand" type="number">2</property>
     <property id="actionButton" type="number">0</property>
     <property id="orangeColoringThreshold" type="number">80</property>
     <property id="redColoringThreshold" type="number">90</property>

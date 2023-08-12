@@ -4,6 +4,7 @@ using Toybox.System as Sys;
 class eucPM {
   var EUC_SERVICE;
   var EUC_CHAR;
+  var EUC_DESC;
 
   private var eucProfileDef;
 
@@ -35,6 +36,8 @@ class eucPM {
   function setKingsong() {
     EUC_SERVICE = Ble.longToUuid(0x0000ffe000001000l, 0x800000805f9b34fbl);
     EUC_CHAR = Ble.longToUuid(0x0000ffe100001000l, 0x800000805f9b34fbl);
+    EUC_DESC = Ble.longToUuid(0x0000290200001000l, 0x800000805f9b34fbl);
+
     self.init();
   }
   function setManager() {

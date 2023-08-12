@@ -25,15 +25,23 @@ class eucBLEDelegate extends Ble.BleDelegate {
   function onConnectedStateChanged(device, state) {
     //		view.deviceStatus=state;
     if (state == Ble.CONNECTION_STATE_CONNECTED) {
+      var cccd;
       service = device.getService(profileManager.EUC_SERVICE);
       char =
         service != null
           ? service.getCharacteristic(profileManager.EUC_CHAR)
           : null;
       if (service != null && char != null) {
-        var cccd = char.getDescriptor(Ble.cccdUuid());
-        cccd.requestWrite([0x01, 0x00]b);
-        paired = true;
+        if (profileManager.EUC_DESC != null) {
+          System.println("use KingsongDescriptor");
+          cccd = char.getDescriptor(profileManager.EUC_DESC);
+        } else {
+          cccd = char.getDescriptor(Ble.cccdUuid());
+        }
+        if (cccd != null) {
+          cccd.requestWrite([0x01, 0x00]b);
+          paired = true;
+        }
       } else {
         Ble.unpairDevice(device);
         paired = false;
