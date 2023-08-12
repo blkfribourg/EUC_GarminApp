@@ -4,13 +4,14 @@ class gotwayConfig {
       eucData.ledMode.toString(),
       eucData.speedAlertMode.toString(),
       eucData.pedalMode.toString(),
+      eucData.useMiles.toString(),
     ];
   }
   function getConfigWithStatusDict() {
-    return [dictLedMode, dictAlarmStatus, dictPedalStatus];
+    return [dictLedMode, dictAlarmStatus, dictPedalStatus, dictDstUnitStatus];
   }
   function getConfigWithStatusLabels() {
-    return ["Leds Mode", "Speed Alarm", "Pedal Mode"];
+    return ["Leds Mode", "Speed Alarm", "Pedal Mode", "Distance unit"];
   }
   function getConfig() {
     return [
@@ -20,6 +21,7 @@ class gotwayConfig {
       dictPedalMode,
       dictCutoffAngleMode,
       dictVolume,
+      dictDstUnit,
     ];
   }
   function getConfigLabels() {
@@ -30,6 +32,7 @@ class gotwayConfig {
       "Pedal Mode",
       "Cutoff Angle",
       "Beep Volume",
+      "Distance unit",
     ];
   }
 
@@ -72,6 +75,15 @@ class gotwayConfig {
     "8" => "8",
     "9" => "9",
   };
+
+  var dictDstUnit = {
+    "km" => "g",
+    "miles" => "m",
+  };
+  var dictDstUnitStatus = {
+    "km" => "0",
+    "miles" => "1",
+  };
   // dict for status report
   // no lights & volume "feedback" on tesla v2
   /*
@@ -89,7 +101,6 @@ class gotwayConfig {
             "Low" => "0"
         };
 */
-
   var dictPedalStatus = {
     "Hard" => "2",
     "Medium" => "1",
@@ -137,5 +148,43 @@ class veteranConfig {
     "Hard" => "0",
     "Medium" => "1",
     "Soft" => "2",
+  };
+}
+
+class kingsongConfig {
+  function getWheelSettingsStatus() {
+    return [];
+  }
+  function getConfigWithStatusDict() {
+    return [];
+  }
+  function getConfigWithStatusLabels() {
+    return [];
+  }
+  function getConfig() {
+    return [dictLightsMode, dictStrobeMode, dictLedMode, dictPedalMode];
+  }
+  function getConfigLabels() {
+    return ["Lights", "Strobe Mode", "Leds Mode", "Pedal Mode"];
+  }
+
+  //dict for communication
+  var dictStrobeMode = {
+    "On" => 1,
+    "Off" => 0,
+  };
+  var dictLightsMode = {
+    "On" => 0,
+    "Off" => 1,
+    "Auto" => 2,
+  };
+  var dictPedalMode = {
+    "Hard" => 0,
+    "Medium" => 1,
+    "Soft" => 2,
+  };
+  var dictLedMode = {
+    "On" => 0,
+    "Off" => 1,
   };
 }

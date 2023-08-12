@@ -24,6 +24,10 @@ class GarminEUCApp extends Application.AppBase {
 
   // onStart() is called on application start up
   function onStart(state as Dictionary?) as Void {
+    // Sandbox zone
+
+    // end of sandbox
+
     eucData.setSettings(
       AppStorage.getSetting("updateDelay"),
       AppStorage.getSetting("rotationSpeed_PWM"),
@@ -41,6 +45,7 @@ class GarminEUCApp extends Application.AppBase {
     activityAutosave = AppStorage.getSetting("activitySavingOnExit");
 
     alarmsTimer.start(method(:onUpdateTimer), eucData.updateDelay, true);
+    System.println("wheelBrand " + eucData.wheelBrand);
   }
 
   // onStop() is called when your application is exiting
@@ -65,7 +70,8 @@ class GarminEUCApp extends Application.AppBase {
 
     if (Toybox has :BluetoothLowEnergy) {
       // depending on EUC brand :
-      profileManager.setGotwayOrLeaperkim();
+
+      profileManager.setManager();
       eucBleDelegate = new eucBLEDelegate(
         profileManager,
         queue,

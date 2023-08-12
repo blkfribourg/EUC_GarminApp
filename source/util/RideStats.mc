@@ -7,8 +7,7 @@ module rideStats {
   var statsNumberToDiplay = 0;
   var statsIndexToDiplay = 0;
   var statsArray;
-
-  var minimalMovingSpeed = 3.0; // 3 kmh
+  var minimalMovingSpeed = 3.0; // 3 kmh erased in GarminEUCApp
   var distanceSinceStartup;
   var startupDistance as Float?;
   var movingmsec = 0.0;
@@ -18,6 +17,11 @@ module rideStats {
   var startupWatchBattery;
 
   function avgSpeed() {
+    if (eucData.useMiles == 0) {
+      minimalMovingSpeed = 3; // 3 km/h
+    } else {
+      minimalMovingSpeed = 2; // 2 mph
+    }
     if (eucData.correctedSpeed > minimalMovingSpeed) {
       if (startupDistance == null) {
         startupDistance = eucData.tripDistance;

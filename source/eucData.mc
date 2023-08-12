@@ -12,6 +12,7 @@ module eucData {
   var alarmThreshold_speed;
   var actionButton;
   var speedCorrectionFactor; // correct distance aswell ...
+  var useMiles = 0;
   var calculatedPWM = 0.0;
   var deviceName = null;
   var voltage_scaling;
@@ -21,6 +22,7 @@ module eucData {
   var lowestBatteryPercentage = 101;
   var tripDistance = 0.0;
   var Phcurrent = 0;
+  var current = 0;
   var temperature = 0;
   var maxTemperature = 65;
   var totalDistance = 0;
@@ -38,6 +40,22 @@ module eucData {
   // Veteran specific
   var version;
 
+  // Kingsong specific
+  var KSName;
+  var KSSerial;
+  var KS18L_scale_toggle = false;
+  var model;
+  var fanStatus;
+  var chargingStatus;
+  var temperature2;
+  var cpuLoad;
+  var output;
+  var speedLimit;
+  var KSMaxSpeed;
+  var KSAlarm3Speed;
+  var KSAlarm2Speed;
+  var KSAlarm1Speed;
+
   function getBatteryPercentage() {
     // using better battery formula from wheellog
     var battery = 0;
@@ -54,8 +72,8 @@ module eucData {
       }
     }
     // ----------------------------------------------------------
-    // LEAPERKIM ------------------------------------------------
-    if (wheelBrand.equals("Leaperkim")) {
+    // VETERAN ------------------------------------------------
+    if (wheelBrand.equals("1")) {
       if (version < 4) {
         // not Patton
         if (voltage > 10020) {
@@ -79,6 +97,57 @@ module eucData {
         }
       }
     }
+    //-----------------------------------------------------------
+    //Kingsong --------------------------------------------------
+
+    if (wheelBrand.equals("2")) {
+      var KSwheels84v = [
+        "KS-18L",
+        "KS-16X",
+        "KS-16XF",
+        "RW",
+        "KS-18LH",
+        "KS-18LY",
+        "KS-S18",
+      ];
+      var KSwheels100v = ["KS-S19"];
+      var KSwheels126v = ["KS-S20", "KS-S22"];
+      if (KSwheels84v.indexOf(model) != -1) {
+        if (voltage > 8350) {
+          battery = 100;
+        } else if (voltage > 6800) {
+          battery = (voltage - 6650) / 17;
+        } else if (voltage > 6400) {
+          battery = (voltage - 6400) / 45;
+        } else {
+          battery = 0;
+        }
+      } else if (KSwheels100v.indexOf(model) != -1) {
+        if (voltage > 10020) {
+          battery = 100;
+        } else if (voltage > 8160) {
+          battery = (voltage - 7980) / 20.4;
+        } else if (voltage > 7680) {
+          battery = (voltage - 7680) / 54.0;
+        } else {
+          battery = 0;
+        }
+      } else if (KSwheels126v.indexOf(model) != -1) {
+        if (voltage > 12525) {
+          battery = 100;
+        } else if (voltage > 10200) {
+          battery = (voltage - 9975) / 25.5;
+        } else if (voltage > 9600) {
+          battery = (voltage - 9600) / 67.5;
+        } else {
+          battery = 0;
+        }
+      } else {
+        // unknown model
+        battery = 0;
+      }
+    }
+
     // ----------------------------------------------------------
     return battery;
   }

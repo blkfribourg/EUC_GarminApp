@@ -27,7 +27,7 @@ class eucPM {
     }
   }
 
-  function setGotwayOrLeaperkim() {
+  function setGotwayOrVeteran() {
     EUC_SERVICE = Ble.longToUuid(0x0000ffe000001000l, 0x800000805f9b34fbl);
     EUC_CHAR = Ble.longToUuid(0x0000ffe100001000l, 0x800000805f9b34fbl);
     self.init();
@@ -36,5 +36,14 @@ class eucPM {
     EUC_SERVICE = Ble.longToUuid(0x0000ffe000001000l, 0x800000805f9b34fbl);
     EUC_CHAR = Ble.longToUuid(0x0000ffe100001000l, 0x800000805f9b34fbl);
     self.init();
+  }
+  function setManager() {
+    if (eucData.wheelBrand == 0 || eucData.wheelBrand == 1) {
+      setGotwayOrVeteran();
+    }
+    if (eucData.wheelBrand == 2) {
+      setKingsong();
+    } else {
+    }
   }
 }

@@ -1,6 +1,7 @@
 import Toybox.Lang;
 using Toybox.StringUtil;
 using Toybox.Math;
+using Toybox.System;
 
 // convert string to byte, used when sending string command via BLE
 function string_to_byte_array(plain_text) {
@@ -29,7 +30,7 @@ function getEUCSettingsDict() {
     return new veteranConfig();
   }
   if (eucData.wheelBrand == 2) {
-    return null;
+    return new kingsongConfig();
   } else {
     return null;
   }
@@ -47,4 +48,29 @@ function createSettingsMenu(settingsLabels, title) {
     return menu;
   }
   return null;
+}
+
+function splitstr(str as Lang.String, char) {
+  var stringArray = new [0];
+  var strlength = str.length();
+  for (var i = 0; i < strlength; i++) {
+    var endidx = str.find(char);
+    if (endidx != null) {
+      var substr = str.substring(0, endidx);
+      if (substr != null) {
+        stringArray.add(substr);
+        var startidx = endidx + 1;
+        str = str.substring(startidx, strlength - substr.length());
+        System.println("str = " + str);
+      }
+    } else {
+      if (str.length() > 0) {
+        stringArray.add(str);
+        break;
+      } else {
+        break;
+      }
+    }
+  }
+  return stringArray;
 }
