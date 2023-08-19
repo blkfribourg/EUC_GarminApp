@@ -25,6 +25,9 @@ class GarminEUCApp extends Application.AppBase {
   // onStart() is called on application start up
   function onStart(state as Dictionary?) as Void {
     // Sandbox zone
+    var c = 0xaa;
+    System.println((c & 0xfe).toNumber());
+    System.println(c & 0xfe);
 
     // end of sandbox
 
@@ -69,8 +72,6 @@ class GarminEUCApp extends Application.AppBase {
     var profileManager = new eucPM();
 
     if (Toybox has :BluetoothLowEnergy) {
-      // depending on EUC brand :
-
       profileManager.setManager();
       eucBleDelegate = new eucBLEDelegate(
         profileManager,

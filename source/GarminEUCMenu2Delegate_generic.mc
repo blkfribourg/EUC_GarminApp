@@ -147,6 +147,10 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
     if (eucData.wheelBrand == 0) {
       gotwayMenuCmd(fromMenu, cmd);
     }
+    if (eucData.wheelBrand == 1) {
+      // System.println(cmd);
+      eucBleDelegate.sendCmd(cmd);
+    }
     // execute command specific to Kingsong
     if (eucData.wheelBrand == 2) {
       kingsongMenuCmd(fromMenu, cmd);
@@ -236,7 +240,7 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
       cmd_frame[17] = 21;
       System.println("pedal_frame: " + cmd_frame.toString());
     }
-    eucBleDelegate.sendCmd(cmd_frame);
+    eucBleDelegate.sendRawCmd(cmd_frame);
   }
 
   function timerCallback() {

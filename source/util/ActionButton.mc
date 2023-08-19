@@ -7,10 +7,17 @@ module ActionButton {
         //do nothing
       }
       if (eucData.actionButton == 1) {
-        bleDelegate.sendCmd(eucDict.dictLightsMode.values()[lightToggleIndex]);
-        lightToggleIndex = lightToggleIndex + 1;
-        if (lightToggleIndex > 2) {
-          lightToggleIndex = 0;
+        // Action = cycle light modes
+
+        if (eucData.wheelBrand == 0) {
+          // gotway/begode
+          bleDelegate.sendCmd(
+            eucDict.dictLightsMode.values()[lightToggleIndex]
+          );
+          lightToggleIndex = lightToggleIndex + 1;
+          if (lightToggleIndex > 2) {
+            lightToggleIndex = 0;
+          }
         }
       }
     }

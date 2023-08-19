@@ -1,5 +1,5 @@
 <settings>
-    
+    <group id="wheelSettings" title="@Strings.wheelSettings" description="@Strings.wheelSettingsDescription">
          <setting
                 propertyKey="@Properties.wheelBrand"
                 title="@Strings.wheelBrand">
@@ -35,7 +35,8 @@
                         max="2"
                         errorMessage="@Strings.speedCorrectionFactor_ErrorMessage" />
             </setting>
-       
+        </group>
+        <group id="UIsettings" title="@Strings.UIsettings" description="@Strings.UIsettingsDescription">
             <setting
                 propertyKey="@Properties.updateDelay"
                 title="@Strings.updateDelay">
@@ -63,7 +64,9 @@
                 max="100"
                 errorMessage="@Strings.coloringThreshold_ErrorMessage" />
             </setting>
-       
+        </group>
+        
+    <group id="PWMSettings" title="@Strings.PWMSettings" description="@Strings.PWMSettingsDescription">
         <setting
             propertyKey="@Properties.rotationSpeed_PWM"
             title="@Strings.rotationSpeed_PWM">
@@ -91,7 +94,8 @@
                 max="1"
                 errorMessage="@Strings.powerFactor_PWM_ErrorMessage" />
         </setting>
-  
+    </group>
+    <group id="alarms" title="@Strings.alarms" description="@Strings.alarmsDescription">
         <setting
             propertyKey="@Properties.alarmThreshold_PWM"
             title="@Strings.alarmThreshold_PWM">
@@ -110,7 +114,8 @@
                 max="200"
                 errorMessage="@Strings.alarmThreshold_speed_ErrorMessage" />
         </setting>
-   
+    </group>
+    <group id="activity" title="@Strings.activity" description="@Strings.activityDescription">
          <setting
             propertyKey="@Properties.activityRecordingOnStartup"
             title="@Strings.activityRecordingOnStartup">
@@ -125,7 +130,8 @@
                 type="boolean"
             />
         </setting>
-    
+    </group>
+    <group id="rideStats" title="@Strings.rideStats" description="@Strings.rideStatsDescription">
          <setting
             propertyKey="@Properties.averageMovingSpeedStatistic"
             title="@Strings.averageMovingSpeedStatistic">
@@ -147,5 +153,5 @@
                 type="boolean"
             />
         </setting>
-   
+    </group>
 </settings>

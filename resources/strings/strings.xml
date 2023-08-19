@@ -1,5 +1,5 @@
 <strings>
-    <string id="AppName">WheelDash</string>
+    <string id="AppName">WheelDash (dev)</string>
     
     <string id="MainMenuTitle">Settings</string>
     <string id="lightsModeMenu">Lights</string>
@@ -54,7 +54,7 @@
     <string id="coloringThreshold_ErrorMessage">You can't set PWM threshold larger than PWM range itself!</string>
     <string id="redColoringThreshold">percentage threshold to color PWM bar with red</string>
 
-    <string id="voltageCorrectionFactor">Voltage Correction Factor, 1 for 67.2V, 1.25 for 84V ...</string>
+    <string id="voltageCorrectionFactor">Voltage Correction Factor (Gotway/Begode only), 1 for 67.2V, 1.25 for 84V ...</string>
     <string id="voltageCorrectionFactor_ErrorMessage">Value out of range</string>
 
     <string id="speedCorrectionFactor">Speed Correction Factor, to adjust wheel reported speed. PWM will still be calculated using uncorrected speed reported by EUC.</string>

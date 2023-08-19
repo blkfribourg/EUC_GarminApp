@@ -38,7 +38,7 @@ module eucData {
   var hPWM;
 
   // Veteran specific
-  var version;
+  var version = 0;
 
   // Kingsong specific
   var KSName;
@@ -60,7 +60,7 @@ module eucData {
     // using better battery formula from wheellog
     var battery = 0;
     // GOTWAY ---------------------------------------------------
-    if (wheelBrand.equals("Gotway")) {
+    if (wheelBrand == 0) {
       if (voltage > 66.8) {
         battery = 100.0;
       } else if (voltage > 54.4) {
@@ -73,34 +73,34 @@ module eucData {
     }
     // ----------------------------------------------------------
     // VETERAN ------------------------------------------------
-    if (wheelBrand.equals("1")) {
+    if (wheelBrand == 1) {
       if (version < 4) {
         // not Patton
         if (voltage > 10020) {
-          battery = 100;
+          battery = 100.0;
         } else if (voltage > 8160) {
           battery = (voltage - 8070) / 19.5;
         } else if (voltage > 7935) {
           battery = (voltage - 7935) / 48.75;
         } else {
-          battery = 0;
+          battery = 0.0;
         }
       } else {
         if (voltage > 12525) {
-          battery = 100;
+          battery = 100.0;
         } else if (voltage > 10200) {
           battery = (voltage - 9975) / 25.5;
         } else if (voltage > 9600) {
           battery = (voltage - 9600) / 67.5;
         } else {
-          battery = 0;
+          battery = 0.0;
         }
       }
     }
     //-----------------------------------------------------------
     //Kingsong --------------------------------------------------
 
-    if (wheelBrand.equals("2")) {
+    if (wheelBrand == 2) {
       var KSwheels84v = [
         "KS-18L",
         "KS-16X",
@@ -114,37 +114,37 @@ module eucData {
       var KSwheels126v = ["KS-S20", "KS-S22"];
       if (KSwheels84v.indexOf(model) != -1) {
         if (voltage > 8350) {
-          battery = 100;
+          battery = 100.0;
         } else if (voltage > 6800) {
           battery = (voltage - 6650) / 17;
         } else if (voltage > 6400) {
           battery = (voltage - 6400) / 45;
         } else {
-          battery = 0;
+          battery = 0.0;
         }
       } else if (KSwheels100v.indexOf(model) != -1) {
         if (voltage > 10020) {
-          battery = 100;
+          battery = 100.0;
         } else if (voltage > 8160) {
           battery = (voltage - 7980) / 20.4;
         } else if (voltage > 7680) {
           battery = (voltage - 7680) / 54.0;
         } else {
-          battery = 0;
+          battery = 0.0;
         }
       } else if (KSwheels126v.indexOf(model) != -1) {
         if (voltage > 12525) {
-          battery = 100;
+          battery = 100.0;
         } else if (voltage > 10200) {
           battery = (voltage - 9975) / 25.5;
         } else if (voltage > 9600) {
           battery = (voltage - 9600) / 67.5;
         } else {
-          battery = 0;
+          battery = 0.0;
         }
       } else {
         // unknown model
-        battery = 0;
+        battery = 0.0;
       }
     }
 
@@ -174,13 +174,18 @@ module eucData {
   }
   function getCalculatedtPWM() {
     if (eucData.voltage != 0) {
-      var CalculatedPWM =
-        eucData.speed.toFloat() /
-        ((rotationSpeed / rotationVoltage) *
-          eucData.voltage.toFloat() *
-          eucData.voltage_scaling *
-          powerFactor);
-      return CalculatedPWM * 100;
+      //Quick&dirty fix for now, need to rewrite this:
+      if (wheelBrand == 1) {
+        return hPWM;
+      } else {
+        var CalculatedPWM =
+          eucData.speed.toFloat() /
+          ((rotationSpeed / rotationVoltage) *
+            eucData.voltage.toFloat() *
+            eucData.voltage_scaling *
+            powerFactor);
+        return CalculatedPWM * 100;
+      }
     } else {
       return 0;
     }

@@ -13,12 +13,14 @@ class eucBLEDelegate extends Ble.BleDelegate {
   var decoder = null;
 
   function initialize(pm, q, _decoder) {
-    //Sys.println("initializeBle");
+    Sys.println("initializeBle");
     BleDelegate.initialize();
     profileManager = pm;
     char = profileManager.EUC_CHAR;
     queue = q;
     decoder = _decoder;
+    System.println(profileManager.EUC_SERVICE);
+    System.println(profileManager.EUC_CHAR);
     Ble.setScanState(Ble.SCAN_STATE_SCANNING);
   }
 
@@ -32,17 +34,13 @@ class eucBLEDelegate extends Ble.BleDelegate {
           ? service.getCharacteristic(profileManager.EUC_CHAR)
           : null;
       if (service != null && char != null) {
-        if (profileManager.EUC_DESC != null) {
-          System.println("use KingsongDescriptor");
-          cccd = char.getDescriptor(profileManager.EUC_DESC);
-        } else {
-          cccd = char.getDescriptor(Ble.cccdUuid());
-        }
-        if (cccd != null) {
-          cccd.requestWrite([0x01, 0x00]b);
-          paired = true;
-        }
+        cccd = char.getDescriptor(Ble.cccdUuid());
+        cccd.requestWrite([0x01, 0x00]b);
+        Sys.println("characteristic notify enabled");
+        paired = true;
+        System.println("BLE Connected");
       } else {
+        Sys.println("unable to connect");
         Ble.unpairDevice(device);
         paired = false;
       }
@@ -65,6 +63,7 @@ class eucBLEDelegate extends Ble.BleDelegate {
         ) {
           Ble.setScanState(Ble.SCAN_STATE_OFF);
           device = Ble.pairDevice(result);
+          System.println("BLE pairing...");
         }
       }
     }
@@ -85,10 +84,16 @@ class eucBLEDelegate extends Ble.BleDelegate {
 
     if (service != null && char != null && cmd != "") {
       var enc_cmd = string_to_byte_array(cmd as String);
-      //Sys.println("sending command " +enc_cmd.toString());
+      // Sys.println("sending command " + enc_cmd.toString());
       char.requestWrite(enc_cmd, { :writeType => Ble.WRITE_TYPE_DEFAULT });
       //  Sys.println("command sent !");
     }
+  }
+
+  function sendRawCmd(cmd) {
+    //Sys.println("enter sending command " + cmd);
+    char.requestWrite(cmd, { :writeType => Ble.WRITE_TYPE_DEFAULT });
+    //  Sys.println("command sent !");
   }
 
   private function contains(iter, obj, sr) {

@@ -3,13 +3,13 @@ using Toybox.BluetoothLowEnergy as Ble;
 
 module frameDecoder {
   function init() {
-    if (eucData.wheelBrand.equals("0")) {
+    if (eucData.wheelBrand == 0) {
       return new GwDecoder();
     }
-    if (eucData.wheelBrand.equals("1")) {
+    if (eucData.wheelBrand == 1) {
       return new VeteranDecoder();
     }
-    if (eucData.wheelBrand.equals("2")) {
+    if (eucData.wheelBrand == 2) {
       return new KingsongDecoder();
     } else {
       return null;
@@ -196,7 +196,7 @@ class VeteranDecoder {
 
       if (
         ((size == 22 || size == 30) && c.toNumber() != 0) ||
-        (size == 23 && (c & 0xfe).toNumber != 0) ||
+        (size == 23 && (c & 0xfe).toNumber() != 0) ||
         (size == 31 && (c & 0xfc).toNumber() != 0)
       ) {
         state = "done";
@@ -210,8 +210,7 @@ class VeteranDecoder {
         return true;
       }
       // break;
-    }
-    if (state.equals("lensearch")) {
+    } else if (state.equals("lensearch")) {
       frame.add(c);
       len = c & 0xff;
       state = "collecting";
@@ -219,13 +218,17 @@ class VeteranDecoder {
       old1 = c;
       //break;
     } else {
-      if (c.toNumber() == 92 && old1.toNumber() == 90 && old2 == 220) {
+      if (
+        c.toNumber() == 92 &&
+        old1.toNumber() == 90 &&
+        old2.toNumber() == 220
+      ) {
         frame = new [0]b;
-        frame.add(92);
-        frame.add(90);
         frame.add(220);
+        frame.add(90);
+        frame.add(92);
         state = "lensearch";
-      } else if (c.toNumber() == 90 && old1 == 220) {
+      } else if (c.toNumber() == 90 && old1.toNumber() == 220) {
         old2 = old1;
       } else {
         old2 = 0;
@@ -241,15 +244,16 @@ class VeteranDecoder {
   }
 
   function processFrame(value) {
-    eucData.voltage = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-      :offset => 4,
-      :endianness => Lang.ENDIAN_BIG,
-    });
+    eucData.voltage =
+      value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+        :offset => 4,
+        :endianness => Lang.ENDIAN_BIG,
+      }) / 100;
     eucData.speed =
       value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
         :offset => 6,
         :endianness => Lang.ENDIAN_BIG,
-      }) * 10;
+      }) / 10;
     eucData.tripDistance = value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
       :offset => 8,
       :endianness => Lang.ENDIAN_BIG,
@@ -262,14 +266,20 @@ class VeteranDecoder {
       value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
         :offset => 16,
         :endianness => Lang.ENDIAN_BIG,
-      }) * 10;
-    eucData.temperature = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-      :offset => 18,
-      :endianness => Lang.ENDIAN_BIG,
-    });
+      }) / 10;
+    eucData.temperature =
+      value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+        :offset => 18,
+        :endianness => Lang.ENDIAN_BIG,
+      }) / 100;
     // implement chargeMode/speedAlert/speedTiltback later
-    eucData.version = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
-      :offset => 28,
+    eucData.version =
+      value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+        :offset => 28,
+        :endianness => Lang.ENDIAN_BIG,
+      }) / 1000;
+    eucData.hPWM = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+      :offset => 34,
       :endianness => Lang.ENDIAN_BIG,
     });
   }
@@ -299,6 +309,7 @@ class KingsongDecoder {
   }
 
   function processFrame(value, char) {
+    System.println("Processing KS frame");
     if (eucData.KSName == null) {
       requestName(char);
     } else if (eucData.KSSerial == null) {
@@ -312,6 +323,7 @@ class KingsongDecoder {
         return false;
       }
       if ((value[16] & 255) == 0xa9) {
+        System.println("live data processing");
         // Live data
         var voltage = value.decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
           :offset => 2,
@@ -388,6 +400,27 @@ class KingsongDecoder {
         }
         System.println("name:" + name);
         System.println("model:" + model);
+        eucData.KSName = name;
+      } else if ((value[16] & 255) == 0xb3) {
+        // Serial Number
+        var sndata = new [18]b;
+        var dataIndex = 2;
+        var sndataIndex = 0;
+        for (var i = 0; i < 14; i++) {
+          sndata[sndataIndex] = value[dataIndex];
+          sndataIndex++;
+          dataIndex++;
+        }
+
+        dataIndex = 17;
+        for (var i = 0; i < 3; i++) {
+          sndata[sndataIndex] = value[dataIndex];
+          sndataIndex++;
+          dataIndex++;
+        }
+
+        sndata[17] = 0;
+        eucData.KSSerial = sndata.toString(); // doesn't convert to char but not really using serial for now
       } else if ((value[16] & 255) == 0xf5) {
         //cpu load
         eucData.cpuLoad = value[14];
