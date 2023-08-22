@@ -3,6 +3,7 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.System;
 using Toybox.Timer;
+using Toybox.StringUtil;
 class GarminEUCApp extends Application.AppBase {
   private var view;
   private var delegate;
@@ -16,39 +17,21 @@ class GarminEUCApp extends Application.AppBase {
   private var activityAutosave;
   private var activityAutorecording;
   private var activityrecordview;
-
+  private var debug;
+  private var actionButtonTrigger;
   function initialize() {
     AppBase.initialize();
     alarmsTimer = new Timer.Timer();
+    actionButtonTrigger = new ActionButton();
   }
 
   // onStart() is called on application start up
   function onStart(state as Dictionary?) as Void {
     // Sandbox zone
-    var c = 0xaa;
-    System.println((c & 0xfe).toNumber());
-    System.println(c & 0xfe);
-
     // end of sandbox
-
-    eucData.setSettings(
-      AppStorage.getSetting("updateDelay"),
-      AppStorage.getSetting("rotationSpeed_PWM"),
-      AppStorage.getSetting("rotationVoltage_PWM"),
-      AppStorage.getSetting("powerFactor_PWM"),
-      AppStorage.getSetting("voltageCorrectionFactor"),
-      AppStorage.getSetting("speedCorrectionFactor"),
-      AppStorage.getSetting("actionButton"),
-      AppStorage.getSetting("alarmThreshold_PWM"),
-      AppStorage.getSetting("alarmThreshold_speed")
-    );
-    eucData.wheelBrand = AppStorage.getSetting("wheelBrand");
+    setSettings();
     rideStatsInit();
-    activityAutorecording = AppStorage.getSetting("activityRecordingOnStartup");
-    activityAutosave = AppStorage.getSetting("activitySavingOnExit");
-
     alarmsTimer.start(method(:onUpdateTimer), eucData.updateDelay, true);
-    System.println("wheelBrand " + eucData.wheelBrand);
   }
 
   // onStop() is called when your application is exiting
@@ -60,7 +43,7 @@ class GarminEUCApp extends Application.AppBase {
       if (activityrecordview != null) {
         if (activityrecordview.isSessionRecording()) {
           activityrecordview.stopRecording();
-          System.println("Activity saved");
+          //System.println("Activity saved");
         }
       }
     }
@@ -81,8 +64,15 @@ class GarminEUCApp extends Application.AppBase {
       BluetoothLowEnergy.setDelegate(eucBleDelegate);
       profileManager.registerProfiles();
     }
-    view = new GarminEUCView();
+    if (debug == true) {
+      view = new GarminEUCDebugView();
+      view.setBleDelegate(eucBleDelegate);
+    } else {
+      view = new GarminEUCView();
+    }
+
     EUCSettingsDict = getEUCSettingsDict(); // in helper function
+    actionButtonTrigger.setEUCDict();
     menu = createSettingsMenu(EUCSettingsDict.getConfigLabels(), "Settings");
     menu2Delegate = new GarminEUCMenu2Delegate_generic(
       menu,
@@ -97,7 +87,8 @@ class GarminEUCApp extends Application.AppBase {
       menu,
       menu2Delegate,
       eucBleDelegate,
-      queue
+      queue,
+      actionButtonTrigger
     );
 
     return [view, delegate] as Array<Views or InputDelegates>;
@@ -113,9 +104,11 @@ class GarminEUCApp extends Application.AppBase {
       }
       if (
         activityrecordview != null &&
-        eucBleDelegate.paired == true &&
+        eucData.paired == true &&
         !activityrecordview.isSessionRecording()
       ) {
+        //enable sensor first ?
+        activityrecordview.enableGPS();
         activityrecordview.startRecording();
         //System.println("autorecord started");
       }
@@ -123,7 +116,7 @@ class GarminEUCApp extends Application.AppBase {
     // -------------------------
 
     eucData.correctedSpeed = eucData.getCorrectedSpeed();
-    eucData.calculatedPWM = eucData.getCalculatedtPWM();
+    eucData.PWM = eucData.getPWM();
     EUCAlarms.speedAlarmCheck();
     if (menu2Delegate.requestSubLabelsUpdate == true) {
       menu2Delegate.updateSublabels();
@@ -139,15 +132,35 @@ class GarminEUCApp extends Application.AppBase {
     if (rideStats.showTopSpeedStatistic) {
       rideStats.topSpeed();
       rideStats.statsArray[statsIndex] =
-        "Top Spd:" + valueRound(eucData.topSpeed, "%.1f").toString();
+        "Top Spd: " + valueRound(eucData.topSpeed, "%.1f").toString();
       //System.println(rideStats.statsArray[statsIndex]);
       statsIndex++;
     }
     if (rideStats.showWatchBatteryConsumptionStatistic) {
       rideStats.watchBatteryUsage();
       rideStats.statsArray[statsIndex] =
-        "Wtch btry/h:" +
+        "Wtch btry/h: " +
         valueRound(eucData.watchBatteryUsage, "%.1f").toString();
+      //System.println(rideStats.statsArray[statsIndex]);
+      statsIndex++;
+    }
+    if (rideStats.showTripDistance) {
+      rideStats.statsArray[statsIndex] =
+        "Trip dist: " + valueRound(eucData.tripDistance, "%.1f").toString();
+      //System.println(rideStats.statsArray[statsIndex]);
+      statsIndex++;
+    }
+    if (rideStats.showVoltage) {
+      rideStats.statsArray[statsIndex] =
+        "voltage: " + valueRound(eucData.getVoltage(), "%.2f").toString();
+      //System.println(rideStats.statsArray[statsIndex]);
+      statsIndex++;
+    }
+    if (rideStats.showWatchBatteryStatistic) {
+      rideStats.statsArray[statsIndex] =
+        "Wtch btry: " +
+        valueRound(System.getSystemStats().battery, "%.1f").toString() +
+        " %";
       //System.println(rideStats.statsArray[statsIndex]);
       statsIndex++;
     }
@@ -158,15 +171,7 @@ class GarminEUCApp extends Application.AppBase {
   function rideStatsInit() {
     rideStats.movingmsec = 0;
     rideStats.statsTimerReset();
-    rideStats.showAverageMovingSpeedStatistic = AppStorage.getSetting(
-      "averageMovingSpeedStatistic"
-    );
-    rideStats.showTopSpeedStatistic =
-      AppStorage.getSetting("topSpeedStatistic");
 
-    rideStats.showWatchBatteryConsumptionStatistic = AppStorage.getSetting(
-      "watchBatteryConsumptionStatistic"
-    );
     // unelegant
     if (rideStats.showAverageMovingSpeedStatistic) {
       rideStats.statsNumberToDiplay++;
@@ -177,8 +182,67 @@ class GarminEUCApp extends Application.AppBase {
     if (rideStats.showWatchBatteryConsumptionStatistic) {
       rideStats.statsNumberToDiplay++;
     }
+    if (rideStats.showTripDistance) {
+      rideStats.statsNumberToDiplay++;
+    }
+    if (rideStats.showVoltage) {
+      rideStats.statsNumberToDiplay++;
+    }
+    if (rideStats.showWatchBatteryStatistic) {
+      rideStats.statsNumberToDiplay++;
+    }
     rideStats.statsArray = new [rideStats.statsNumberToDiplay];
     //System.println("array size:" + rideStats.statsArray.size());
+  }
+  function setSettings() {
+    eucData.maxDisplayedSpeed = AppStorage.getSetting("maxSpeed");
+    eucData.mainNumber = AppStorage.getSetting("mainNumber");
+    eucData.topBar = AppStorage.getSetting("topBar");
+    eucData.gothPWN = AppStorage.getSetting("begodeCF");
+    eucData.currentCorrection = AppStorage.getSetting("currentCorrection");
+    eucData.maxTemperature = AppStorage.getSetting("maxTemperature");
+    eucData.updateDelay = AppStorage.getSetting("updateDelay");
+    eucData.rotationSpeed = AppStorage.getSetting("rotationSpeed_PWM");
+    eucData.rotationVoltage = AppStorage.getSetting("rotationVoltage_PWM");
+    eucData.powerFactor = AppStorage.getSetting("powerFactor_PWM");
+    eucData.voltage_scaling = AppStorage.getSetting("voltageCorrectionFactor");
+    eucData.speedCorrectionFactor = AppStorage.getSetting(
+      "speedCorrectionFactor"
+    );
+
+    eucData.alarmThreshold_PWM = AppStorage.getSetting("alarmThreshold_PWM");
+    eucData.alarmThreshold_speed = AppStorage.getSetting(
+      "alarmThreshold_speed"
+    );
+    eucData.alarmThreshold_temp = AppStorage.getSetting("alarmThreshold_temp");
+    eucData.wheelBrand = AppStorage.getSetting("wheelBrand");
+    activityAutorecording = AppStorage.getSetting("activityRecordingOnStartup");
+    activityAutosave = AppStorage.getSetting("activitySavingOnExit");
+    debug = AppStorage.getSetting("debugMode");
+
+    rideStats.showAverageMovingSpeedStatistic = AppStorage.getSetting(
+      "averageMovingSpeedStatistic"
+    );
+    rideStats.showTopSpeedStatistic =
+      AppStorage.getSetting("topSpeedStatistic");
+
+    rideStats.showWatchBatteryConsumptionStatistic = AppStorage.getSetting(
+      "watchBatteryConsumptionStatistic"
+    );
+    rideStats.showTripDistance = AppStorage.getSetting("tripDistanceStatistic");
+
+    rideStats.showVoltage = AppStorage.getSetting("voltageStatistic");
+    rideStats.showWatchBatteryStatistic = AppStorage.getSetting(
+      "watchBatteryStatistic"
+    );
+    actionButtonTrigger.recordActivityButton = AppStorage.getSetting(
+      "recordActivityButtonMap"
+    );
+    actionButtonTrigger.cycleLightButton = AppStorage.getSetting(
+      "cycleLightButtonMap"
+    );
+    actionButtonTrigger.beepButton = AppStorage.getSetting("beepButtonMap");
+    actionButtonTrigger.delay = AppStorage.getSetting("actionQueueDelay");
   }
 }
 

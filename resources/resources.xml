@@ -3,14 +3,15 @@
         <fitField id="0" displayInChart="true" sortOrder = "0" precision="2"
         chartTitle="@Strings.speed_graph_label" dataLabel="@Strings.speed_label"
         unitLabel="@Strings.speed_units_kmh" fillColor="#FF0000" />
-
+<!--
         <fitField id="16" displayInChart="true" sortOrder = "0" precision="2"
         chartTitle="@Strings.speed_graph_label" dataLabel="@Strings.speed_label"
         unitLabel="@Strings.speed_units_mph" fillColor="#FF0000" />
+        -->
 
         <fitField id="1" displayInChart="true" sortOrder = "1" precision="2"
         chartTitle="@Strings.pwm_graph_label" dataLabel="@Strings.pwm_label"
-        unitLabel="@Strings.pwm_units" fillColor="#FF0000" />
+        unitLabel="@Strings.percentage_units" fillColor="#FF0000" />
 
         <fitField id="2" displayInChart="true" sortOrder = "2" precision="2"
         chartTitle="@Strings.voltage_graph_label" dataLabel="@Strings.voltage_label"
@@ -31,22 +32,22 @@
         <fitField id="6" displayInChart="false" displayInActivitySummary="true" sortOrder = "6" precision="2"
         dataLabel="@Strings.tripDistance_label"
         unitLabel="@Strings.distanceUnits_km"/>
-        
+       <!-- 
         <fitField id="17" displayInChart="false" displayInActivitySummary="true" sortOrder = "6" precision="2"
         dataLabel="@Strings.tripDistance_label"
         unitLabel="@Strings.distanceUnits_miles"/>
-
+          -->
         <fitField id="7" displayInChart="false" displayInActivitySummary="true" sortOrder = "7" precision="2"
         dataLabel="@Strings.maxSpeed_label"
         unitLabel="@Strings.speed_units_kmh"/>
-
+ <!-- 
         <fitField id="18" displayInChart="false" displayInActivitySummary="true" sortOrder = "7" precision="2"
         dataLabel="@Strings.maxSpeed_label"
         unitLabel="@Strings.speed_units_mph"/>
-
+ -->
           <fitField id="8" displayInChart="false" displayInActivitySummary="true" sortOrder = "8" precision="2"
         dataLabel="@Strings.maxPWM_label"
-        unitLabel="@Strings.maxPWM_units"/>
+        unitLabel="@Strings.percentage_units"/>
 
           <fitField id="9" displayInChart="false" displayInActivitySummary="true" sortOrder = "9" precision="2"
         dataLabel="@Strings.maxCurrent_label"
@@ -63,20 +64,36 @@
          <fitField id="12" displayInChart="false" displayInActivitySummary="true" sortOrder = "12" precision="2"
         dataLabel="@Strings.avgSpeed_label"
         unitLabel="@Strings.speed_units_kmh"/>
-
+ <!-- 
          <fitField id="19" displayInChart="false" displayInActivitySummary="true" sortOrder = "12" precision="2"
         dataLabel="@Strings.avgSpeed_label"
         unitLabel="@Strings.speed_units_mph"/>
-
+-->
         <fitField id="13" displayInChart="false" displayInActivitySummary="true" sortOrder = "13" precision="2"
         dataLabel="@Strings.avgCurrent_label"
         unitLabel="@Strings.avgCurrent_units"/>
 
-         <fitField id="14" displayInChart="false" displayInActivitySummary="true" sortOrder = "14" precision="2"
+        <fitField id="14" displayInChart="false" displayInActivitySummary="true" sortOrder = "14" precision="2"
         dataLabel="@Strings.avgPower_label"
         unitLabel="@Strings.avgPower_units"/>
 
-        <fitField id="15" displayInChart="false" displayInActivitySummary="true" sortOrder = "15" precision="2"
+        <fitField id="16" displayInChart="false" displayInActivitySummary="true" sortOrder = "15" precision="2"
+        dataLabel="@Strings.minVoltage_label"
+        unitLabel="@Strings.voltage_units"/>
+
+        <fitField id="17" displayInChart="false" displayInActivitySummary="true" sortOrder = "16" precision="2"
+        dataLabel="@Strings.maxVoltage_label"
+        unitLabel="@Strings.voltage_units"/>
+
+        <fitField id="18" displayInChart="false" displayInActivitySummary="true" sortOrder = "17" precision="2"
+        dataLabel="@Strings.minBattery_label"
+        unitLabel="@Strings.percentage_units"/>
+
+        <fitField id="19" displayInChart="false" displayInActivitySummary="true" sortOrder = "18" precision="2"
+        dataLabel="@Strings.maxBattery_label"
+        unitLabel="@Strings.percentage_units"/>
+
+        <fitField id="15" displayInChart="false" displayInActivitySummary="true" sortOrder = "1" precision="2"
         dataLabel="@Strings.runningTime_label"
         unitLabel="@Strings.runnintTime_units"/>
 

@@ -25,7 +25,7 @@ class BleQueue {
   function add(data, uuid) {
     if (data[0] != null || data[1] == UPDATE) {
       queue.add(data);
-      //Sys.println("add OK ? Data = "+data);
+      //Sys.println("add OK ? Data = " + data);
     } else {
       //Sys.println("not queued: null char for "+uuid+" fun="+data[1]);
     }

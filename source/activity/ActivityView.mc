@@ -35,7 +35,9 @@ class ActivityRecordDelegate extends WatchUi.BehaviorDelegate {
         }
       }
     }
-
+    if (keyEvent.getKey() == WatchUi.KEY_ESC) {
+      WatchUi.popView(WatchUi.SLIDE_DOWN);
+    }
     return true;
   }
 
@@ -103,10 +105,16 @@ class ActivityRecordView extends WatchUi.View {
       fitTimer.start(method(:updateFitData), 1000, true);
     }
     WatchUi.requestUpdate();
-    startingMoment = new Time.Moment(Time.now().value());
-    startingEUCTripDistance = eucData.tripDistance;
+    initSessionVar();
   }
-
+  function initSessionVar() {
+    startingMoment = new Time.Moment(Time.now().value());
+    startingEUCTripDistance = eucData.totalDistance;
+    minVoltage = eucData.getVoltage();
+    maxVoltage = minVoltage;
+    minBatteryPerc = eucData.getBatteryPercentage();
+    maxBatteryPerc = minBatteryPerc;
+  }
   //! Load your resources here
   //! @param dc Device context
   public function onLayout(dc as Dc) as Void {}
@@ -127,6 +135,9 @@ class ActivityRecordView extends WatchUi.View {
   //! Restore the state of the app and prepare the view to be shown.
   public function onShow() as Void {
     //System.println("starting sensors");
+    enableGPS();
+  }
+  function enableGPS() {
     Position.enableLocationEvents(
       Position.LOCATION_CONTINUOUS,
       method(:onPosition)
@@ -223,10 +234,16 @@ class ActivityRecordView extends WatchUi.View {
   const AVGCURRENT_FIELD_ID = 13;
   const AVGPOWER_FIELD_ID = 14;
   const RUNNINGTIME_FIELD_ID = 15;
+  /*
   const SPEED_FIELD_ID_MILES = 16;
   const TRIPDISTANCE_FIELD_ID_MILES = 17;
   const MAXSPEED_FIELD_ID_MILES = 18;
   const AVGSPEED_FIELD_ID_MILES = 19;
+  */
+  const MINVOLTAGE_FIELD_ID = 16;
+  const MAXVOLTAGE_FIELD_ID = 17;
+  const MINBATTERY_FIELD_ID = 18;
+  const MAXBATTERY_FIELD_ID = 19;
 
   hidden var mSpeedField;
   hidden var mPWMField;
@@ -244,9 +261,14 @@ class ActivityRecordView extends WatchUi.View {
   hidden var mAvgCurrentField;
   hidden var mAvgPowerField;
   hidden var mRunningTimeDebugField;
+  hidden var mMinVoltageField;
+  hidden var mMaxVoltageField;
+  hidden var mMinBatteryField;
+  hidden var mMaxBatteryField;
 
   // Initializes the new fields in the activity file
   function setupField(session as Session) {
+    /*
     if (eucData.useMiles == 1) {
       mSpeedField = session.createField(
         "current_speed",
@@ -273,31 +295,32 @@ class ActivityRecordView extends WatchUi.View {
         { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "mph" }
       );
     } else {
-      mSpeedField = session.createField(
-        "current_speed",
-        SPEED_FIELD_ID,
-        FitContributor.DATA_TYPE_FLOAT,
-        { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "km/h" }
-      );
-      mTripDistField = session.createField(
-        "current_TripDistance",
-        TRIPDISTANCE_FIELD_ID,
-        FitContributor.DATA_TYPE_FLOAT,
-        { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km" }
-      );
-      mMaxSpeedField = session.createField(
-        "session_Max_speed",
-        MAXSPEED_FIELD_ID,
-        FitContributor.DATA_TYPE_FLOAT,
-        { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km/h" }
-      );
-      mAvgSpeedField = session.createField(
-        "session_Avg_Speed",
-        AVGSPEED_FIELD_ID,
-        FitContributor.DATA_TYPE_FLOAT,
-        { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km/h" }
-      );
-    }
+      */
+    mSpeedField = session.createField(
+      "current_speed",
+      SPEED_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "km/h" }
+    );
+    mTripDistField = session.createField(
+      "current_TripDistance",
+      TRIPDISTANCE_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km" }
+    );
+    mMaxSpeedField = session.createField(
+      "session_Max_speed",
+      MAXSPEED_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km/h" }
+    );
+    mAvgSpeedField = session.createField(
+      "session_Avg_Speed",
+      AVGSPEED_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km/h" }
+    );
+    // }
 
     mPWMField = session.createField(
       "current_PWM",
@@ -373,39 +396,81 @@ class ActivityRecordView extends WatchUi.View {
       FitContributor.DATA_TYPE_FLOAT,
       { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "s" }
     );
+
+    mMinVoltageField = session.createField(
+      "session_Min_Voltage",
+      MINVOLTAGE_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "V" }
+    );
+    mMaxVoltageField = session.createField(
+      "session_Max_Voltage",
+      MAXVOLTAGE_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "V" }
+    );
+    mMinBatteryField = session.createField(
+      "session_Min_Battery",
+      MINBATTERY_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "%" }
+    );
+    mMaxBatteryField = session.createField(
+      "session_Max_Battery",
+      MAXBATTERY_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "%" }
+    );
   }
   private var maxSpeed;
   private var maxPWM;
   private var maxCurrent;
   private var maxPower;
   private var maxTemp;
+  private var currentBattery;
   private var currentPWM;
   private var correctedSpeed;
   private var currentCurrent;
+  private var currentVoltage;
   private var sumCurrent;
   private var callNb;
   private var currentPower;
   private var sumPower;
   private var SessionDistance;
+  private var minVoltage;
+  private var maxVoltage;
+  private var minBatteryPerc;
+  private var maxBatteryPerc;
 
   function updateFitData() {
     callNb++;
-
-    currentPWM = eucData.calculatedPWM;
-    correctedSpeed = eucData.correctedSpeed;
-    currentCurrent = (currentPWM / 100) * eucData.Phcurrent;
-    currentPower = currentCurrent * eucData.voltage * eucData.voltage_scaling;
+    var currentMoment = new Time.Moment(Time.now().value());
+    var elaspedTime = startingMoment.subtract(currentMoment);
     SessionDistance =
-      (eucData.tripDistance - startingEUCTripDistance) *
+      (eucData.totalDistance - startingEUCTripDistance) *
       eucData.speedCorrectionFactor;
+    var avgSpd = SessionDistance / (elaspedTime.value().toFloat() / 3600);
+    currentBattery = eucData.getBatteryPercentage();
+    currentVoltage = eucData.getVoltage();
+    currentPWM = eucData.getPWM();
+    correctedSpeed = eucData.correctedSpeed;
+    currentCurrent = eucData.getCurrent();
+    currentPower = currentCurrent * currentVoltage;
+
+    SessionDistance =
+      (eucData.totalDistance - startingEUCTripDistance) *
+      eucData.speedCorrectionFactor;
+
     mSpeedField.setData(correctedSpeed); // id 0
     mPWMField.setData(currentPWM); //id 1
-    mVoltageField.setData(eucData.voltage * eucData.voltage_scaling); // id 2
+    mVoltageField.setData(currentVoltage); // id 2
     mCurrentField.setData(currentCurrent); // id 3
     mPowerField.setData(currentPower); // id 4
     mTempField.setData(eucData.temperature); // id 5
-    mTripDistField.setData(SessionDistance); // id 6
-
+    //sanityCheck
+    if (eucData.totalDistance > startingEUCTripDistance && avgSpd < 120) {
+      mTripDistField.setData(SessionDistance); // id 6
+    }
     if (correctedSpeed > maxSpeed) {
       maxSpeed = correctedSpeed;
       mMaxSpeedField.setData(maxSpeed); // id 7
@@ -426,14 +491,27 @@ class ActivityRecordView extends WatchUi.View {
       maxTemp = eucData.temperature;
       mMaxTempField.setData(maxTemp); // id 11
     }
+    if (currentVoltage < minVoltage) {
+      minVoltage = currentVoltage;
+      mMinVoltageField.setData(minVoltage);
+    }
+    if (currentVoltage > maxVoltage) {
+      maxVoltage = currentVoltage;
+      mMaxVoltageField.setData(maxVoltage);
+    }
+    if (currentBattery < minBatteryPerc) {
+      minBatteryPerc = currentBattery;
+      mMinBatteryField.setData(minBatteryPerc);
+    }
+    if (currentBattery > maxBatteryPerc) {
+      maxBatteryPerc = currentBattery;
+      mMaxBatteryField.setData(maxBatteryPerc);
+    }
 
-    var currentMoment = new Time.Moment(Time.now().value());
-    var elaspedTime = startingMoment.subtract(currentMoment);
     //System.println("elaspsed :" + elaspedTime.value());
-
-    mAvgSpeedField.setData(
-      SessionDistance / (elaspedTime.value().toFloat() / 3600)
-    ); // id 12
+    if (avgSpd < 120) {
+      mAvgSpeedField.setData(avgSpd); // id 12
+    }
 
     sumCurrent = sumCurrent + currentCurrent;
     sumPower = sumPower + currentPower;

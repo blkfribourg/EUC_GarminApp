@@ -145,15 +145,53 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
   function sendCommand(fromMenu, cmd) {
     // execute command specific to Gotway/begode
     if (eucData.wheelBrand == 0) {
-      gotwayMenuCmd(fromMenu, cmd);
+      if (
+        EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
+        eucData.correctedSpeed > 2
+      ) {
+        //moving and locked settting
+      } else {
+        gotwayMenuCmd(fromMenu, cmd);
+        /*
+        if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1) {
+          System.println("executing locked setting because not moving");
+        } else {
+          System.println("executing non-locked setting");
+        }*/
+      }
     }
     if (eucData.wheelBrand == 1) {
-      // System.println(cmd);
-      eucBleDelegate.sendCmd(cmd);
+      if (
+        EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
+        eucData.correctedSpeed > 2
+      ) {
+        //moving and locked settting
+      } else {
+        eucBleDelegate.sendCmd(cmd);
+        /*
+        if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1) {
+          System.println("executing locked setting because not moving");
+        } else {
+          System.println("executing non-locked setting");
+        }*/
+      }
     }
     // execute command specific to Kingsong
     if (eucData.wheelBrand == 2) {
-      kingsongMenuCmd(fromMenu, cmd);
+      if (
+        EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
+        eucData.correctedSpeed > 2
+      ) {
+        //moving and locked settting
+      } else {
+        kingsongMenuCmd(fromMenu, cmd);
+        /*
+        if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1) {
+          System.println("executing locked setting because not moving");
+        } else {
+          System.println("executing non-locked setting");
+        }*/
+      }
     }
     queue.delayTimer.start(method(:timerCallback), delay, true);
     requestSubLabelsUpdate = true;

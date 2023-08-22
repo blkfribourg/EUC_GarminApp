@@ -35,6 +35,9 @@ class gotwayConfig {
       "Distance unit",
     ];
   }
+  function getConfigToLock() {
+    return ["Speed Alarm", "Pedal Mode", "Cutoff Angle", "Distance unit"];
+  }
 
   //dict for communication
   var dictLightsMode = {
@@ -130,6 +133,10 @@ class veteranConfig {
     return ["Lights", "Pedal Mode", "Reset trip"];
   }
 
+  function getConfigToLock() {
+    return ["Pedal Mode"];
+  }
+
   //dict for communication
   var dictLightsMode = {
     "On" => "SetLightON",
@@ -168,6 +175,9 @@ class kingsongConfig {
     return ["Lights", "Strobe Mode", "Leds Mode", "Pedal Mode"];
   }
 
+  function getConfigToLock() {
+    return ["Pedal Mode"];
+  }
   //dict for communication
   var dictStrobeMode = {
     "On" => 1,

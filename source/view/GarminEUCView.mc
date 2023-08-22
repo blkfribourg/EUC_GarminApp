@@ -46,6 +46,7 @@ class GarminEUCView extends WatchUi.View {
         System.getClockTime().min.format("%02d")
     );
     var batteryPercentage = eucData.getBatteryPercentage();
+
     cDrawables[:BatteryNumber].setText(
       valueRound(batteryPercentage, "%.1f") + "%"
     );
@@ -62,18 +63,42 @@ class GarminEUCView extends WatchUi.View {
                 case 4: cDrawables[:BottomSubtitle].setText(WheelData.rideDistance.toString()); break;
             }
         */
-    cDrawables[:SpeedNumber].setText(
-      valueRound(eucData.getCorrectedSpeed(), "%.1f").toString()
-    );
 
+    var speedNumberStr;
+
+    if (eucData.mainNumber == 0) {
+      var speedNumberVal = "";
+      speedNumberVal = eucData.correctedSpeed;
+      if (speedNumberVal > 100) {
+        speedNumberStr = valueRound(eucData.correctedSpeed, "%d").toString();
+      } else {
+        speedNumberStr = valueRound(eucData.correctedSpeed, "%.1f").toString();
+      }
+    } else {
+      var speedNumberVal;
+      speedNumberVal = eucData.PWM;
+      if (speedNumberVal > 100) {
+        speedNumberStr = valueRound(eucData.PWM, "%d").toString();
+      } else {
+        speedNumberStr = valueRound(eucData.PWM, "%.1f").toString();
+      }
+    }
+    cDrawables[:SpeedNumber].setText(speedNumberStr);
     //cDrawables[:SpeedArc].setValues(WheelData.currentSpeed.toFloat(), WheelData.speedLimit);
-    cDrawables[:SpeedArc].setValues(eucData.calculatedPWM.toFloat(), 100);
+    if (eucData.topBar == 0) {
+      cDrawables[:SpeedArc].setValues(eucData.PWM.toFloat(), 100);
+    } else {
+      cDrawables[:SpeedArc].setValues(
+        eucData.correctedSpeed.toFloat(),
+        eucData.maxDisplayedSpeed
+      );
+    }
+
     cDrawables[:BatteryArc].setValues(batteryPercentage, 100);
     cDrawables[:TemperatureArc].setValues(
       eucData.temperature,
       eucData.maxTemperature
     );
-
     cDrawables[:TimeDate].setColor(Graphics.COLOR_WHITE);
     cDrawables[:SpeedNumber].setColor(Graphics.COLOR_WHITE);
     cDrawables[:BatteryNumber].setColor(Graphics.COLOR_WHITE);
@@ -85,16 +110,31 @@ class GarminEUCView extends WatchUi.View {
   }
 
   function diplayStats() {
+    //System.println(EUCAlarms.alarmType);
     var rideStatsText = "";
+    if (!eucData.paired) {
+      rideStatsText = "EUC Not\nConnected";
+    } else {
+      if (!EUCAlarms.alarmType.equals("none")) {
+        rideStatsText = "!! Alarm: " + EUCAlarms.alarmType + " !!";
+      } else {
+        if (
+          rideStats.statsArray != null &&
+          rideStats.statsNumberToDiplay != 0
+        ) {
+          rideStatsText = rideStats.statsArray[rideStats.statsIndexToDiplay];
 
-    if (rideStats.statsArray != null && rideStats.statsNumberToDiplay != 0) {
-      rideStatsText = rideStats.statsArray[rideStats.statsIndexToDiplay];
-      rideStats.statsTimer--;
-      if (rideStats.statsTimer < 0) {
-        rideStats.statsIndexToDiplay++;
-        rideStats.statsTimerReset();
-        if (rideStats.statsIndexToDiplay > rideStats.statsNumberToDiplay - 1) {
-          rideStats.statsIndexToDiplay = 0;
+          rideStats.statsTimer--;
+          if (rideStats.statsTimer < 0) {
+            rideStats.statsIndexToDiplay++;
+            rideStats.statsTimerReset();
+            if (
+              rideStats.statsIndexToDiplay >
+              rideStats.statsNumberToDiplay - 1
+            ) {
+              rideStats.statsIndexToDiplay = 0;
+            }
+          }
         }
       }
     }
