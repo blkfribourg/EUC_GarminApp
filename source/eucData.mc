@@ -20,16 +20,16 @@ module eucData {
   var useMiles = 0;
   var deviceName = null;
   var voltage_scaling;
-  var speed = 0;
+  var speed = 0.0;
   var correctedSpeed = 0.0;
-  var voltage = 0;
+  var voltage = 0.0;
   var lowestBatteryPercentage = 101;
   var tripDistance = 0.0;
-  var Phcurrent = 0;
-  var current = 0;
+  var Phcurrent = 0.0;
+  var current = 0.0;
   var temperature = 0;
   var maxTemperature = 65;
-  var totalDistance = 0;
+  var totalDistance = 0.0;
   var PWM = 0;
   var pedalMode = "0";
   var speedAlertMode = "0";
@@ -39,7 +39,7 @@ module eucData {
   var avgMovingSpeed = 0.0;
   var topSpeed = 0.0;
   var watchBatteryUsage = 0.0;
-  var hPWM = 0;
+  var hPWM = 0.0;
   var currentCorrection;
   var gothPWN = false;
 
@@ -56,7 +56,7 @@ module eucData {
   var chargingStatus;
   var temperature2 = 0;
   var cpuLoad = 0;
-  var output;
+  // var output;
   var speedLimit = 0;
   var KSMaxSpeed;
   var KSAlarm3Speed;
@@ -119,33 +119,34 @@ module eucData {
       ];
       var KSwheels100v = ["KS-S19"];
       var KSwheels126v = ["KS-S20", "KS-S22"];
+
       if (KSwheels84v.indexOf(model) != -1) {
-        if (voltage > 8350) {
+        if (voltage > 83.5) {
           battery = 100.0;
-        } else if (voltage > 6800) {
-          battery = (voltage - 6650) / 17;
-        } else if (voltage > 6400) {
-          battery = (voltage - 6400) / 45;
+        } else if (voltage > 68.0) {
+          battery = (voltage - 66.5) / 0.17;
+        } else if (voltage > 64.0) {
+          battery = (voltage - 64.0) / 0.45;
         } else {
           battery = 0.0;
         }
       } else if (KSwheels100v.indexOf(model) != -1) {
-        if (voltage > 10020) {
+        if (voltage > 100.2) {
           battery = 100.0;
-        } else if (voltage > 8160) {
-          battery = (voltage - 7980) / 20.4;
-        } else if (voltage > 7680) {
-          battery = (voltage - 7680) / 54.0;
+        } else if (voltage > 81.6) {
+          battery = (voltage - 79.8) / 0.204;
+        } else if (voltage > 76.8) {
+          battery = (voltage - 76.8) / 0.54;
         } else {
           battery = 0.0;
         }
       } else if (KSwheels126v.indexOf(model) != -1) {
-        if (voltage > 12525) {
+        if (voltage > 125.25) {
           battery = 100.0;
-        } else if (voltage > 10200) {
-          battery = (voltage - 9975) / 25.5;
-        } else if (voltage > 9600) {
-          battery = (voltage - 9600) / 67.5;
+        } else if (voltage > 102.0) {
+          battery = (voltage - 99.75) / 0.255;
+        } else if (voltage > 96.0) {
+          battery = (voltage - 96.0) / 0.675;
         } else {
           battery = 0.0;
         }
@@ -162,7 +163,7 @@ module eucData {
   function getPWM() {
     if (eucData.voltage != 0) {
       //Quick&dirty fix for now, need to rewrite this:
-      if (wheelBrand == 1 || gothPWN == true) {
+      if (wheelBrand == 1 || wheelBrand == 2 || gothPWN == true) {
         return hPWM;
       } else {
         var CalculatedPWM =

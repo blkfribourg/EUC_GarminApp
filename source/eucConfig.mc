@@ -198,3 +198,25 @@ class kingsongConfig {
     "Off" => 1,
   };
 }
+
+class dummyConfig {
+  function getWheelSettingsStatus() {
+    return [];
+  }
+  function getConfigWithStatusDict() {
+    return [];
+  }
+  function getConfigWithStatusLabels() {
+    return [];
+  }
+  function getConfig() {
+    return [];
+  }
+  function getConfigLabels() {
+    return [];
+  }
+
+  function getConfigToLock() {
+    return [];
+  }
+}

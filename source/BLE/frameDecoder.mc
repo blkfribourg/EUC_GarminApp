@@ -11,6 +11,9 @@ module frameDecoder {
     }
     if (eucData.wheelBrand == 2) {
       return new KingsongDecoder();
+    }
+    if (eucData.wheelBrand == 3) {
+      return new GwDecoder2();
     } else {
       return null;
     }
@@ -104,14 +107,14 @@ class GwDecoder {
       100;
     eucData.voltage =
       value
-        .decodeNumber(Lang.NUMBER_FORMAT_SINT16, {
+        .decodeNumber(Lang.NUMBER_FORMAT_UINT16, {
           :offset => 2,
           :endianness => Lang.ENDIAN_BIG,
         })
         .abs() / 100.0;
     eucData.tripDistance =
       value.decodeNumber(Lang.NUMBER_FORMAT_UINT32, {
-        :offset => 6,
+        :offset => 8,
         :endianness => Lang.ENDIAN_BIG,
       }) / 1000.0; //in km
     eucData.Phcurrent =
@@ -177,6 +180,117 @@ class GwDecoder {
         Bytes 20-23: frame footer, 5A 5A 5A 5A
     Unknown bytes may carry out other data, but currently not used by the parser.
 */
+}
+
+class GwDecoder2 {
+  function signedShortFromBytesBE(bytes, starting) {
+    if (bytes.size() >= starting + 2) {
+      return (
+        ((((bytes[starting] & 0xff) << 8) | bytes[starting + 1]) << 16) >> 16
+      );
+    }
+    return 0;
+  }
+
+  function shortFromBytesBE(bytes, starting) {
+    if (bytes.size() >= starting + 2) {
+      return (
+        ((((bytes[starting] & 0xff) << 8) | (bytes[starting + 1] & 0xff)) <<
+          16) >>
+        16
+      );
+    }
+    return 0;
+  }
+
+  function UInt32FromBytesBE(bytes, starting) {
+    if (bytes.size() >= starting + 4) {
+      return (
+        ((bytes[starting] & 0xff) << 24) |
+        ((bytes[starting + 1] & 0xff) << 16) |
+        ((bytes[starting + 2] & 0xff) << 8) |
+        (bytes[starting + 3] & 0xff)
+      );
+    }
+    return 0;
+  }
+
+  var settings = 0x0000;
+  function frameBuffer(transmittedFrame) {
+    for (var i = 0; i < transmittedFrame.size(); i++) {
+      if (checkChar(transmittedFrame[i]) == true) {
+        // process frame and guess type
+        if (frame[18].toNumber() == 0) {
+          // Frame A
+          //System.println("Frame A detected");
+          processFrameA(frame);
+        } else if (frame[18].toNumber() == 4) {
+          // Frame B
+          //System.println("Frame B detected");
+          processFrameB(frame);
+        }
+      }
+    }
+  }
+
+  // adapted from wheellog
+  var oldc;
+  var frame as ByteArray?;
+  var state = "unknown";
+  function checkChar(c) {
+    if (state.equals("collecting") && frame != null) {
+      frame.add(c);
+      oldc = c;
+
+      var size = frame.size();
+
+      if (
+        (size == 20 && c.toNumber() != 24) ||
+        (size > 20 && size <= 24 && c.toNumber() != 90)
+      ) {
+        state = "unknown";
+        return false;
+      }
+
+      if (size == 24) {
+        state = "done";
+        return true;
+      }
+    } else {
+      if (oldc != null && oldc.toNumber() == 85 && c.toNumber() == 170) {
+        // beguining of a frame
+        frame = new [0]b;
+        frame.add(85);
+        frame.add(170);
+        state = "collecting";
+      }
+      oldc = c;
+    }
+    return false;
+  }
+
+  function processFrameB(value) {
+    eucData.totalDistance = UInt32FromBytesBE(value, 2) / 1000.0; // in km
+    settings = shortFromBytesBE(value, 6);
+
+    //Sys.println("byte 10 :"+settings);
+
+    eucData.pedalMode = (settings >> 13) & 0x03;
+    eucData.speedAlertMode = (settings >> 10) & 0x03;
+    eucData.rollAngleMode = (settings >> 7) & 0x03;
+    eucData.useMiles = settings & 0x01;
+    eucData.ledMode = value[13].toNumber(); // 12 in euc dashboard by freestyl3r
+    //eucData.lightMode=value[19]&0x03; unable to get light mode from wheel
+    //System.println("light mode (frameA ):"+eucData.lightMode);
+  }
+  function processFrameA(value) {
+    eucData.voltage = shortFromBytesBE(value, 2) / 100.0;
+    eucData.speed = (signedShortFromBytesBE(value, 4).abs() * 3.6) / 100.0;
+    eucData.tripDistance = shortFromBytesBE(value, 8) / 1000.0; //in km
+    eucData.Phcurrent = signedShortFromBytesBE(value, 10) / 100.0;
+    eucData.temperature = signedShortFromBytesBE(value, 12) / 340.0 + 36.53;
+    eucData.hPWM = signedShortFromBytesBE(value, 14).abs() / 100.0;
+  }
 }
 
 class VeteranDecoder {
@@ -337,7 +451,7 @@ class KingsongDecoder {
   }
 
   function processFrame(value) {
-    System.println("Processing KS frame");
+    //System.println("Processing KS frame");
     /*
     if (eucData.KSName == null) {
       requestName(char);
@@ -352,7 +466,7 @@ class KingsongDecoder {
         return false;
       }
       if ((value[16] & 255) == 0xa9) {
-        System.println("live data processing");
+        //System.println("live data processing");
         // Live data
         var voltage = decode2bytes(value[2], value[3]) / 100.0;
         eucData.voltage = voltage; //wd.setVoltage(voltage);
@@ -370,7 +484,12 @@ class KingsongDecoder {
           eucData.totalDistance =
             decode4bytes(value[6], value[7], value[8], value[9]) / 1000.0;
         }
-        eucData.current = decode2bytes(value[10], value[11]);
+        //eucData.current = decode2bytes(value[10], value[11]);
+        var KScurrent = (value[11] << 8) | value[10];
+        if (32767 < KScurrent) {
+          KScurrent = KScurrent - 65536;
+        }
+        eucData.current = KScurrent / 100.0;
         eucData.temperature = decode2bytes(value[12], value[13]) / 100.0;
 
         if ((value[15] & 255) == 224) {
@@ -396,7 +515,7 @@ class KingsongDecoder {
         for (i = 2; i < end; i++) {
           advName = advName + value[i].toChar().toString();
         }
-        System.println(advName);
+        //System.println(advName);
         var model = "";
         var ss = splitstr(advName, "-");
         for (i = 0; i < ss.size() - 1; i++) {
@@ -404,6 +523,7 @@ class KingsongDecoder {
             model = model + "-";
           }
           model = model + ss[i];
+          // System.println("." + model + ".");
         }
 
         eucData.model = model;
@@ -433,7 +553,7 @@ class KingsongDecoder {
       } else if ((value[16] & 255) == 0xf5) {
         //cpu load
         eucData.cpuLoad = value[14];
-        eucData.output = value[15] * 100.0;
+        eucData.hPWM = value[15] / 1000.0;
         return false;
       } else if ((value[16] & 255) == 0xf6) {
         //speed limit (PWM?)

@@ -31,19 +31,22 @@ function getEUCSettingsDict() {
   }
   if (eucData.wheelBrand == 2) {
     return new kingsongConfig();
+  }
+  if (eucData.wheelBrand == 3) {
+    return new gotwayConfig();
   } else {
-    return null;
+    return new dummyConfig();
   }
 }
 
-// Generate Main Settings Menu
+// Generate  Menu
 import Toybox.WatchUi;
-function createSettingsMenu(settingsLabels, title) {
+function createMenu(labels, title) {
   var menu = new WatchUi.Menu2({ :title => title });
 
-  if (settingsLabels != null) {
-    for (var i = 0; i < settingsLabels.size(); i++) {
-      menu.addItem(new MenuItem(settingsLabels[i], "", settingsLabels[i], {}));
+  if (labels != null) {
+    for (var i = 0; i < labels.size(); i++) {
+      menu.addItem(new MenuItem(labels[i], "", labels[i], {}));
     }
     return menu;
   }

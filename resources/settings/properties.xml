@@ -31,7 +31,7 @@
     <property id="maxTemperature" type="float">65</property>
     <property id="begodeCF" type="boolean">false</property>
     
-    <property id="debugMode" type="boolean">true</property>
+    <property id="debugMode" type="boolean">false</property>
     
     
     

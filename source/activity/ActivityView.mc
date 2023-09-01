@@ -244,6 +244,7 @@ class ActivityRecordView extends WatchUi.View {
   const MAXVOLTAGE_FIELD_ID = 17;
   const MINBATTERY_FIELD_ID = 18;
   const MAXBATTERY_FIELD_ID = 19;
+  const MINTEMP_FIELD_ID = 20;
 
   hidden var mSpeedField;
   hidden var mPWMField;
@@ -257,6 +258,7 @@ class ActivityRecordView extends WatchUi.View {
   hidden var mMaxCurrentField;
   hidden var mMaxPowerField;
   hidden var mMaxTempField;
+  hidden var mMinTempField;
   hidden var mAvgSpeedField;
   hidden var mAvgCurrentField;
   hidden var mAvgPowerField;
@@ -378,6 +380,13 @@ class ActivityRecordView extends WatchUi.View {
       { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "°C" }
     );
 
+    mMinTempField = session.createField(
+      "session_Min_Temperature",
+      MINTEMP_FIELD_ID,
+      FitContributor.DATA_TYPE_FLOAT,
+      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "°C" }
+    );
+
     mAvgCurrentField = session.createField(
       "session_Avg_Current",
       AVGCURRENT_FIELD_ID,
@@ -427,6 +436,7 @@ class ActivityRecordView extends WatchUi.View {
   private var maxCurrent;
   private var maxPower;
   private var maxTemp;
+  private var minTemp;
   private var currentBattery;
   private var currentPWM;
   private var correctedSpeed;
@@ -491,6 +501,10 @@ class ActivityRecordView extends WatchUi.View {
       maxTemp = eucData.temperature;
       mMaxTempField.setData(maxTemp); // id 11
     }
+    if (eucData.temperature < minTemp) {
+      minTemp = eucData.temperature;
+      mMaxTempField.setData(minTemp); // id 11
+    }
     if (currentVoltage < minVoltage) {
       minVoltage = currentVoltage;
       mMinVoltageField.setData(minVoltage);
@@ -530,6 +544,7 @@ class ActivityRecordView extends WatchUi.View {
     maxCurrent = 0.0;
     maxPower = 0.0;
     maxTemp = -255;
+    minTemp = 255;
     sumCurrent = 0.0;
     sumPower = 0.0;
     callNb = 0;

@@ -60,7 +60,11 @@ class eucPM {
     self.initKS();
   }
   function setManager() {
-    if (eucData.wheelBrand == 0 || eucData.wheelBrand == 1) {
+    if (
+      eucData.wheelBrand == 0 ||
+      eucData.wheelBrand == 1 ||
+      eucData.wheelBrand == 3
+    ) {
       // System.println("GW PM");
       setGotwayOrVeteran();
     }

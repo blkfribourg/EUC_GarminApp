@@ -19,6 +19,7 @@ class GarminEUCApp extends Application.AppBase {
   private var activityrecordview;
   private var debug;
   private var actionButtonTrigger;
+  private var profileMenu;
   function initialize() {
     AppBase.initialize();
     alarmsTimer = new Timer.Timer();
@@ -28,6 +29,7 @@ class GarminEUCApp extends Application.AppBase {
   // onStart() is called on application start up
   function onStart(state as Dictionary?) as Void {
     // Sandbox zone
+    //profileMenu= createMenu(["Profile1","Profile2","Profile3"],"Profile Selection");
     // end of sandbox
     setSettings();
     rideStatsInit();
@@ -73,7 +75,7 @@ class GarminEUCApp extends Application.AppBase {
 
     EUCSettingsDict = getEUCSettingsDict(); // in helper function
     actionButtonTrigger.setEUCDict();
-    menu = createSettingsMenu(EUCSettingsDict.getConfigLabels(), "Settings");
+    menu = createMenu(EUCSettingsDict.getConfigLabels(), "Settings");
     menu2Delegate = new GarminEUCMenu2Delegate_generic(
       menu,
       eucBleDelegate,

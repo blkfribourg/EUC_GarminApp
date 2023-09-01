@@ -18,15 +18,13 @@ class eucBLEDelegate extends Ble.BleDelegate {
   var message6 = "";
   var message7 = "";
   var message8 = "";
-  var message9 = "lol";
-
+  var message9 = "";
   /*
   var frame1 = [
-    170, 85, 75, 83, 45, 83, 50, 50, 45, 48, 50, 51, 49, 0, 0, 0, 245, 20, 138,
+    170, 85, 75, 83, 45, 83, 50, 50, 45, 48, 50, 51, 49, 0, 0, 0, 187, 20, 138,
     90, 90,
   ];
-  */
-
+*/
   function initialize(pm, q, _decoder) {
     message1 = "initializeBle";
     BleDelegate.initialize();
@@ -37,6 +35,10 @@ class eucBLEDelegate extends Ble.BleDelegate {
 
     //System.println(profileManager.EUC_SERVICE);
     //System.println(profileManager.EUC_CHAR);
+    /*if (eucData.wheelBrand == 2) {
+      decoder.processFrame(frame1);
+    }
+    */
     Ble.setScanState(Ble.SCAN_STATE_SCANNING);
   }
 
@@ -56,6 +58,12 @@ class eucBLEDelegate extends Ble.BleDelegate {
         message4 = "characteristic notify enabled";
         eucData.paired = true;
         message5 = "BLE paired";
+        /* NOT WORKING
+        if (device.getName() != null || device.getName().length != 0) {
+          eucData.name = device.getName();
+        } else {
+          eucData.name = "Unknown";
+        }*/
       } else {
         message6 = "unable to pair";
         Ble.unpairDevice(device);
@@ -77,13 +85,18 @@ class eucBLEDelegate extends Ble.BleDelegate {
       result = scanResults.next()
     ) {
       if (result instanceof Ble.ScanResult) {
-        if (eucData.wheelBrand == 0 || eucData.wheelBrand == 1) {
+        if (
+          eucData.wheelBrand == 0 ||
+          eucData.wheelBrand == 1 ||
+          eucData.wheelBrand == 3
+        ) {
           wheelFound = contains(
             result.getServiceUuids(),
             profileManager.EUC_SERVICE,
             result
           );
-        } else if (eucData.wheelBrand == 2) {
+        }
+        if (eucData.wheelBrand == 2) {
           var advName = result.getDeviceName();
           if (advName != null) {
             if (advName.substring(0, 3).equals("KSN")) {
@@ -96,7 +109,6 @@ class eucBLEDelegate extends Ble.BleDelegate {
         if (wheelFound == true) {
           Ble.setScanState(Ble.SCAN_STATE_OFF);
           device = Ble.pairDevice(result);
-          message2 = "BLE connection...";
         }
       }
     }
@@ -123,7 +135,9 @@ class eucBLEDelegate extends Ble.BleDelegate {
     // message7 = "CharacteristicChanged";
     if (
       decoder != null &&
-      (eucData.wheelBrand == 0 || eucData.wheelBrand == 1)
+      (eucData.wheelBrand == 0 ||
+        eucData.wheelBrand == 1 ||
+        eucData.wheelBrand == 3)
     ) {
       decoder.frameBuffer(value);
     }

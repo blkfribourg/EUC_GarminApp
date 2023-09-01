@@ -42,6 +42,8 @@
     <string id="wheelBrand0">Gotway/Begode</string>
     <string id="wheelBrand1">Leaperkim</string>
     <string id="wheelBrand2">Kingsong</string>
+    <string id="wheelBrand3">Gotway/Begode_v2</string>
+    
 
     <string id="recordActivityButtonMap">Button mapping to activity recording view</string>
     <string id="cycleLightButtonMap">Button mapping to cycle light mode</string>
@@ -165,11 +167,12 @@
     
     <string id="percentage_units">%</string>
     <string id="maxCurrent_label">Session max current</string>
-    <string id="maxCurrent_units">A</string>
+  
     <string id="maxPower_label">Session max power</string>
-    <string id="maxPower_units">W</string>
+   
     <string id="maxTemperature_label">Session max temperature</string>
-    <string id="maxTemperature_units">°C</string>
+    <string id="minTemperature_label">Session min temperature</string>
+
     <string id="avgSpeed_label">Session average speed</string>
     
     <string id="avgCurrent_label">Session average current</string>
@@ -179,9 +182,9 @@
     <string id="runningTime_label">Session running time (debug)</string>
     <string id="runnintTime_units">s</string>
 
-    <string id="minVoltage_label">Session minimum voltage</string>
-    <string id="maxVoltage_label">Session maximum voltage</string>
-    <string id="minBattery_label">Session minimum battery percentage</string>
-    <string id="maxBattery_label">Session maximum battery percentage</string>
+    <string id="minVoltage_label">Session min voltage</string>
+    <string id="maxVoltage_label">Session max voltage</string>
+    <string id="minBattery_label">Session min battery %</string>
+    <string id="maxBattery_label">Session max battery %</string>
 
 </strings>
